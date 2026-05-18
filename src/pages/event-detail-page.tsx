@@ -30,7 +30,7 @@ type EventDetail = {
   logo_url?: string;
 };
 
-const API_BASE_URL = "http://localhost:4000";
+const API_BASE_URL = "${import.meta.env.VITE_API_BASE_URL}";
 const EVENTS_BASE_URL = `${API_BASE_URL}/api/v1/events`;
 const DEFAULT_FALLBACK_IMAGE = "/images/judah-default-fallback.png";
 const FEATURED_FALLBACK_IMAGE = "/images/judah-featured-fallback.png";

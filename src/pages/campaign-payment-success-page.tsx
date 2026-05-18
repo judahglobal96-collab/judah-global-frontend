@@ -52,7 +52,7 @@ export default function CampaignPaymentSuccessPage() {
     async function fetchPaymentSuccess() {
       try {
         const res = await fetch(
-        `http://localhost:4000/api/v1/campaigns/payment-success?session_id=${encodeURIComponent(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/campaigns/payment-success?session_id=${encodeURIComponent(
           sessionId || ""
         )}`
       );

@@ -60,7 +60,7 @@ function resolveMediaUrl(path?: string | null): string | null {
   if (!path) return null;
   if (path.startsWith("http://") || path.startsWith("https://")) return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `http://localhost:4000${normalized}`;
+  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
 
 function formatDate(dateString?: string) {
@@ -151,7 +151,7 @@ function normalizeEventFromProps(props: EventCardProps): EventCardItem {
 
 async function trackEventClick(eventId: string, source: string) {
   try {
-    await fetch("http://localhost:4000/api/v1/event-engagement/click", {
+    await fetch("${import.meta.env.VITE_API_BASE_URL}/api/v1/event-engagement/click", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

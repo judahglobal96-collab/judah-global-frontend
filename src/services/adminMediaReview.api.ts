@@ -3,7 +3,7 @@ import type {
   MediaModerationStatus,
 } from '../types/adminMediaReview';
 
-const API_BASE = 'http://localhost:4000/api/v1/admin/media-review';
+const API_BASE = '${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/media-review';
 
 export interface FetchAdminMediaReviewParams {
   status?: MediaModerationStatus | 'all';
@@ -38,7 +38,7 @@ export async function fetchAdminMediaReviewQueue(
     moderationStatus: item.moderation_status ?? 'pending',
     moderationReason: item.moderation_reason ?? '',
     heroImageUrl: item.media_url
-      ? `http://localhost:4000${item.media_url}`
+      ? `${import.meta.env.VITE_API_BASE_URL}${item.media_url}`
       : '/images/judah-default-fallback.png',
 
     eventTitle: item.title ?? 'Untitled Event',

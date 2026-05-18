@@ -123,7 +123,7 @@ export default function AdminPaidPromosPage() {
     const token = localStorage.getItem("auth_token");
 
     const response = await fetch(
-      `http://localhost:4000/api/v1/admin/events/${eventId}/paid-promos`,
+      `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}/paid-promos`,
   {
     headers: {
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

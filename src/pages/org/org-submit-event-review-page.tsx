@@ -230,7 +230,7 @@ export default function OrgSubmitEventReviewPage() {
     });
 
       const metadataRes = await fetch(
-  `http://localhost:4000/api/v1/org/${orgUuid}/submit-event/review`,
+  `${import.meta.env.VITE_API_BASE_URL}/api/v1/org/${orgUuid}/submit-event/review`,
   {
     method: "POST",
     headers: {
@@ -258,7 +258,7 @@ if (!metadataRes.ok) {
   );
 }
       const res = await fetch(
-        "http://localhost:4000/api/v1/event-payments/checkout-session",
+        "${import.meta.env.VITE_API_BASE_URL}/api/v1/event-payments/checkout-session",
         {
           method: "POST",
           headers: {

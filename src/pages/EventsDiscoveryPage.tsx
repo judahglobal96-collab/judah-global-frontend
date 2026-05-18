@@ -141,7 +141,7 @@ function resolveMediaUrl(url?: string | null) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const normalized = url.startsWith("/") ? url : `/${url}`;
-  return `http://localhost:4000${normalized}`;
+  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
 
 function buildPromoBody(promo: DiscoveryPromoItem) {
@@ -344,7 +344,7 @@ export default function EventsDiscoveryPage() {
       if (category) params.set("category", category);
 
       const res = await fetch(
-        `http://localhost:4000/api/v1/events?${params.toString()}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events?${params.toString()}`
       );
 
       if (!res.ok) {
@@ -389,7 +389,7 @@ export default function EventsDiscoveryPage() {
   const region = getSupportRegion(); // TEMP for P0.3
 
   const res = await fetch(
-  `http://localhost:4000/api/v1/events/placements/discovery-top-row?region=${encodeURIComponent(region)}`
+  `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/placements/discovery-top-row?region=${encodeURIComponent(region)}`
 );
       if (!res.ok) {
         throw new Error(`Request failed with status ${res.status}`);

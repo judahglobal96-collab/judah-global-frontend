@@ -95,7 +95,7 @@ export default function OrgSubmitEventSchedulePage() {
       }
 
       const res = await fetch(
-        `http://localhost:4000/api/v1/event-submissions/events/${draft.eventId}/schedule`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/events/${draft.eventId}/schedule`,
         {
           method: "POST",
           headers: {

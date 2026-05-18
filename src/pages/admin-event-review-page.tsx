@@ -65,7 +65,7 @@ export default function AdminEventReviewPage() {
       setLoading(true);
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/admin/events/${eventId}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}`
       );
 
       const data = await response.json().catch(() => null);
@@ -91,7 +91,7 @@ export default function AdminEventReviewPage() {
       setWorking(true);
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/admin/events/${eventId}/approve`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}/approve`,
         {
           method: "PATCH",
           headers: {
@@ -133,7 +133,7 @@ export default function AdminEventReviewPage() {
       setWorking(true);
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/admin/events/${eventId}/reject`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}/reject`,
         {
           method: "PATCH",
           headers: {

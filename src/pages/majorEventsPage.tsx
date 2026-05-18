@@ -32,7 +32,7 @@ export default function MajorEventsPage() {
       params.set("region", region); // TEMP for P0.3
 
       const res = await fetch(
-        `http://localhost:4000/api/v1/events/major-events?${params.toString()}`
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/major-events?${params.toString()}`
       );
 
       if (!res.ok) {

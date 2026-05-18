@@ -90,7 +90,7 @@ function resolveMediaUrl(url?: string | null) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const normalized = url.startsWith("/") ? url : `/${url}`;
-  return `http://localhost:4000${normalized}`;
+  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
 
 function buildPromoBody(promo: HomepagePromoItem) {

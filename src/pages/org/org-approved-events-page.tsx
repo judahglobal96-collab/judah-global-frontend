@@ -38,7 +38,7 @@ type ApprovedEventApiRow = {
   ends_at_utc: string | null;
 };
 
-const API_BASE_URL = "http://localhost:4000";
+const API_BASE_URL = "${import.meta.env.VITE_API_BASE_URL}";
 
 function formatEventDate(dateValue?: string | null) {
   if (!dateValue) return "Date pending";

@@ -95,7 +95,7 @@ export default function SubmitEventSponsorPage() {
         formData.append("upload_type", "event_media");
 
         const uploadResponse = await fetch(
-          `http://localhost:4000/api/events/${currentDraft.eventId}/media`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/events/${currentDraft.eventId}/media`,
           {
             method: "POST",
             body: formData,
@@ -122,7 +122,7 @@ export default function SubmitEventSponsorPage() {
       }
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/event-submissions/events/${currentDraft.eventId}/sponsor`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/events/${currentDraft.eventId}/sponsor`,
         {
           method: "POST",
           headers: {

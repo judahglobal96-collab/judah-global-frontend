@@ -28,7 +28,7 @@ export default function AdminApprovedEventsPage() {
       setError("");
 
       const response = await fetch(
-        "http://localhost:4000/api/v1/admin/approved-events"
+        "${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/approved-events"
       );
 
       const rawText = await response.text();
@@ -64,7 +64,7 @@ export default function AdminApprovedEventsPage() {
       setSavingFeaturedId(eventId);
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/admin/events/${eventId}/featured`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}/featured`,
         {
           method: "PATCH",
           headers: {

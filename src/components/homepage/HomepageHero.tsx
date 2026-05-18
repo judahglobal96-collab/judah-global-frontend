@@ -77,7 +77,7 @@ function resolveMediaUrl(url?: string | null) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
   const normalized = url.startsWith("/") ? url : `/${url}`;
-  return `http://localhost:4000${normalized}`;
+  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
 
 function buildLocation(hero: HeroPromoItem) {
@@ -310,7 +310,7 @@ export default function HomepageHero() {
     const region = getSupportRegion(); // later replace with selected/active region context
 
     const res = await fetch(
-  `http://localhost:4000/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
+  `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
 );
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);

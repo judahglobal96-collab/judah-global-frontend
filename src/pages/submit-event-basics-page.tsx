@@ -54,7 +54,7 @@ export default function SubmitEventBasicsPage() {
       formData.append("media", mediaFile);
 
       const response = await fetch(
-        `http://localhost:4000/api/v1/events/${eventId}/media`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}/media`,
         {
           method: "POST",
           headers: {
@@ -111,7 +111,7 @@ export default function SubmitEventBasicsPage() {
       setSaving(true);
 
       const response = await fetch(
-        "http://localhost:4000/api/v1/event-submissions/draft",
+        "${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/draft",
         {
           method: "POST",
           headers: {

@@ -34,7 +34,7 @@ async function parseJson(response: Response) {
 }
 
 export async function getMyOrganization(): Promise<OrgMeResponse> {
-  const response = await fetch("http://localhost:4000/api/v1/org/me", {
+  const response = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/v1/org/me", {
     method: "GET",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -44,7 +44,7 @@ export async function getMyOrganization(): Promise<OrgMeResponse> {
 }
 
 export async function getOrganizationByUuid(orgUuid: string): Promise<OrgMeResponse> {
-  const response = await fetch(`http://localhost:4000/api/v1/org/${orgUuid}`, {
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/org/${orgUuid}`, {
     method: "GET",
     headers: getAuthHeaders(),
     credentials: "include",
@@ -58,7 +58,7 @@ export async function getOrganizationByUuid(orgUuid: string): Promise<OrgMeRespo
 
 export async function createOrgEventDraft(orgUuid: string, payload: any) {
   const response = await fetch(
-    "http://localhost:4000/api/v1/event-submissions/draft",
+    "${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/draft",
     {
       method: "POST",
       headers: getAuthHeaders(),
@@ -85,7 +85,7 @@ export async function uploadSponsorLogo(eventId: string, file: File) {
   const token = localStorage.getItem("auth_token");
 
   const response = await fetch(
-    `http://localhost:4000/api/events/${eventId}/media`,
+    `${import.meta.env.VITE_API_BASE_URL}/api/events/${eventId}/media`,
     {
       method: "POST",
       headers: {
