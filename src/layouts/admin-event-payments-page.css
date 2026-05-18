@@ -1,0 +1,48 @@
+.admin-payments-page {
+  padding: 24px;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.payments-table th,
+.payments-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.payments-table th {
+  background: #f7f7f7;
+  font-weight: 600;
+}
+
+.status.succeeded {
+  color: green;
+  font-weight: 600;
+}
+
+.status.failed {
+  color: red;
+  font-weight: 600;
+}
+
+.type.event_fee {
+  color: #333;
+}
+
+.type.featured_badge {
+  color: #b8860b;
+}
+
+.type.featured_placement {
+  color: #8b0000;
+}

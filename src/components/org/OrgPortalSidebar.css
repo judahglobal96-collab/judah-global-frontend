@@ -1,0 +1,99 @@
+.org-portal-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+  color: #f8fafc;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-height: 100%;
+}
+
+.org-portal-sidebar__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.org-portal-sidebar__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.org-portal-sidebar__title {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.org-portal-sidebar__badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  background: rgba(245, 158, 11, 0.16);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.32);
+}
+
+.org-portal-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.org-portal-sidebar__link {
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.18s ease;
+  border: 1px solid transparent;
+}
+
+.org-portal-sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.org-portal-sidebar__link--active {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(255, 255, 255, 0.08));
+  color: #ffffff;
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 980px) {
+  .org-portal-sidebar {
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: auto;
+  }
+
+  .org-portal-sidebar__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .org-portal-sidebar__nav {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,117 @@
+.org-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background:
+    radial-gradient(circle at top left, rgba(184, 134, 11, 0.08), transparent 28%),
+    linear-gradient(180deg, #0f1115 0%, #151922 100%);
+  color: #f5f1e8;
+}
+
+.org-sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 12, 16, 0.82);
+  backdrop-filter: blur(14px);
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.org-sidebar__brand h2 {
+  margin: 6px 0 6px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f8f4ea;
+}
+
+.org-sidebar__brand p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: rgba(245, 241, 232, 0.72);
+  line-height: 1.5;
+}
+
+.org-sidebar__eyebrow,
+.org-topbar__eyebrow {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #c8a96b;
+}
+
+.org-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.org-navlink {
+  display: block;
+  text-decoration: none;
+  color: rgba(245, 241, 232, 0.82);
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.org-navlink:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border-color: rgba(200, 169, 107, 0.22);
+}
+
+.org-navlink.active {
+  background: linear-gradient(
+    135deg,
+    rgba(200, 169, 107, 0.22),
+    rgba(200, 169, 107, 0.08)
+  );
+  border-color: rgba(200, 169, 107, 0.38);
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.org-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.org-topbar {
+  padding: 24px 32px 12px;
+}
+
+.org-topbar__title {
+  margin: 6px 0 0;
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: #fffaf0;
+}
+
+.org-content {
+  padding: 8px 32px 32px;
+}
+
+@media (max-width: 960px) {
+  .org-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .org-sidebar {
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .org-sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .org-navlink {
+    width: fit-content;
+  }
+}
