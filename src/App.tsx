@@ -12,6 +12,7 @@ import SignupPage from "./pages/signup-page";
 import ProfilePage from "./pages/profile-page";
 import EditProfilePage from "./pages/edit-profile-page";
 
+import AdminShell from "./layouts/admin-shell";
 import AdminOverviewPage from "./pages/admin-overview-page";
 import AdminPendingEventsPage from "./pages/admin-pending-events-page";
 import AdminEventReviewPage from "./pages/admin-event-review-page";
@@ -75,19 +76,20 @@ function App() {
           <Route path="/dashboard" element={<ProfilePage />} />
 
 
-          {/* Admin */}
-          <Route path="/admin" element={<AdminOverviewPage />} />
-          <Route path="/admin/overview" element={<AdminOverviewPage />} />
-          <Route path="/admin/pending-events" element={<AdminPendingEventsPage />} />
-          <Route path="/admin/review/:eventId" element={<AdminEventReviewPage />} />
-          <Route path="/admin/approved-events" element={<AdminApprovedEventsPage />} />
-          <Route path="/admin/media-review" element={<AdminMediaReviewPage />} />
-          <Route path="/admin/event-payments" element={<AdminEventPaymentsPage />} />
-          <Route path="/admin/rejected-events" element={<AdminRejectedEventsPage />} />
-          <Route path="/admin/org-accounts" element={<AdminOrgAccountsPage />} />
-          <Route path="/admin/org-accounts/create" element={<AdminOrgAccountCreatePage />} />
-          <Route path="/admin/paid-promos" element={<PaidPromosPage />} />
-          <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
+          <Route element={<AdminShell />}>
+            <Route path="/admin" element={<AdminOverviewPage />} />
+            <Route path="/admin/overview" element={<AdminOverviewPage />} />
+            <Route path="/admin/pending-events" element={<AdminPendingEventsPage />} />
+            <Route path="/admin/review/:eventId" element={<AdminEventReviewPage />} />
+            <Route path="/admin/approved-events" element={<AdminApprovedEventsPage />} />
+            <Route path="/admin/media-review" element={<AdminMediaReviewPage />} />
+            <Route path="/admin/event-payments" element={<AdminEventPaymentsPage />} />
+            <Route path="/admin/rejected-events" element={<AdminRejectedEventsPage />} />
+            <Route path="/admin/org-accounts" element={<AdminOrgAccountsPage />} />
+            <Route path="/admin/org-accounts/create" element={<AdminOrgAccountCreatePage />} />
+            <Route path="/admin/paid-promos" element={<PaidPromosPage />} />
+            <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
+          </Route>
 
           {/* Submit Event Flow */}
           <Route path="/submit-event" element={<SubmitEventPage />} />
