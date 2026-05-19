@@ -37,7 +37,7 @@
 }
 
 .admin-org-title {
-  font-size: 48px;
+  font-size: 38px;
   line-height: 1.05;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -350,7 +350,7 @@
 
 .form-grid.two-col {
   display: grid;
-  grid-template-columns: repeat(2, minmax(320, 1fr));
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
   gap: 24px;
   text-align: left;
 }
