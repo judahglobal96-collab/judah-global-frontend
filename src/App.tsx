@@ -92,7 +92,7 @@ function App() {
             <Route path="/admin/event-payments" element={<AdminEventPaymentsPage />} />
             <Route path="/admin/rejected-events" element={<AdminRejectedEventsPage />} />
             <Route path="/admin/org-accounts" element={<AdminOrgAccountsPage />} />
-            <Route path="/admin/org-accounts/create" element={<AdminOrgAccountCreatePage />} />
+            <Route path="/admin/org-accounts/new" element={<AdminOrgAccountCreatePage />} />
             <Route path="/admin/paid-promos" element={<PaidPromosPage />} />
             <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
           </Route>
