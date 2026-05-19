@@ -1,6 +1,6 @@
 .admin-org-page {
   width: 100%;
-  max-width: 1900px;
+  max-width: 2300px;
   margin: 0 auto;
   padding: 40px 40px 80px;
 }
@@ -76,7 +76,7 @@
 
 .admin-org-toolbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px 140px;
+  grid-template-columns: minmax(0, 1fr) 300px 140px;
   gap: 14px;
   margin-top: 24px;
 }
