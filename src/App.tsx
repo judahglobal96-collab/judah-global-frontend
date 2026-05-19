@@ -28,6 +28,8 @@ import SubmitEventVerifyEmailPage from "./pages/submit-event-verify-email-page";
 import SubmitEventSuccessPage from "./pages/submit-event-success-page";
 import MyEventsPage from "./pages/account/my-events-page";
 import MajorEventsPage from "./pages/majorEventsPage";
+import MediaPlacementGuide from "./pages/media-placement-guide-page";
+
 
 import AdminApprovedEventsPage from "./pages/admin/AdminApprovedEventsPage";
 import AdminMediaReviewPage from "./pages/admin/AdminMediaReviewPage";
@@ -78,6 +80,8 @@ function App() {
             <Route path="upload-media" element={<OrgUploadMediaPage />} />
             <Route path="promote-event" element={<OrgPromoteEventPage />} />
             <Route path="edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
+            <Route path="media-placement-guide" element={<MediaPlacementGuide />} />
+
           </Route>
 
         <Route element={<PublicShell />}>
