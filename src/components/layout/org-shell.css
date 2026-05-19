@@ -1,7 +1,19 @@
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .org-shell {
   min-height: 100vh;
+  width: 100vw;
+  max-width: none;
+  margin: 0;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   background:
     radial-gradient(circle at top left, rgba(184, 134, 11, 0.08), transparent 28%),
     linear-gradient(180deg, #0f1115 0%, #151922 100%);
