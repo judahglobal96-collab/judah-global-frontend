@@ -62,8 +62,22 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<OrgShell />}>
-          <Route path="/org/:orgUuid" element={<ActivatedOrgPage />} />
+          {/* Organization */}
+          <Route path="/org/:orgUuid" element={<OrgShell />}>
+            <Route index element={<ActivatedOrgPage />} />
+            <Route path="approved-events" element={<OrgApprovedEventsPage />} />
+            <Route path="build-presence" element={<OrgBuildPresencePage />} />
+            <Route path="submit-event" element={<OrgSubmitEventPage />} />
+            <Route path="submit-event/basics" element={<OrgSubmitEventBasicsPage />} />
+            <Route path="submit-event/location" element={<OrgSubmitEventLocationPage />} />
+            <Route path="submit-event/schedule" element={<OrgSubmitEventSchedulePage />} />
+            <Route path="submit-event/sponsor" element={<OrgSubmitEventSponsorPage />} />
+            <Route path="submit-event/monetization" element={<OrgSubmitEventMonetizationPage />} />
+            <Route path="submit-event/review" element={<OrgSubmitEventReviewPage />} />
+            <Route path="submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
+            <Route path="upload-media" element={<OrgUploadMediaPage />} />
+            <Route path="promote-event" element={<OrgPromoteEventPage />} />
+            <Route path="edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
           </Route>
 
         <Route element={<PublicShell />}>
@@ -113,23 +127,6 @@ function App() {
           <Route path="/submit-event/verify-email" element={<SubmitEventVerifyEmailPage />} />
           <Route path="/submit-event/success" element={<SubmitEventSuccessPage />} />
 
-          {/* Organization */}
-          <Route path="/org/:orgUuid" element={<OrgShell />}>
-            <Route index element={<ActivatedOrgPage />} />
-            <Route path="approved-events" element={<OrgApprovedEventsPage />} />
-            <Route path="build-presence" element={<OrgBuildPresencePage />} />
-            <Route path="submit-event" element={<OrgSubmitEventPage />} />
-            <Route path="submit-event/basics" element={<OrgSubmitEventBasicsPage />} />
-            <Route path="submit-event/location" element={<OrgSubmitEventLocationPage />} />
-            <Route path="submit-event/schedule" element={<OrgSubmitEventSchedulePage />} />
-            <Route path="submit-event/sponsor" element={<OrgSubmitEventSponsorPage />} />
-            <Route path="submit-event/monetization" element={<OrgSubmitEventMonetizationPage />} />
-            <Route path="submit-event/review" element={<OrgSubmitEventReviewPage />} />
-            <Route path="submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
-            <Route path="upload-media" element={<OrgUploadMediaPage />} />
-            <Route path="promote-event" element={<OrgPromoteEventPage />} />
-            <Route path="edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
-          </Route>
 
           {/* Fallback */}
           <Route path="*" element={<NotFoundPage />} />
