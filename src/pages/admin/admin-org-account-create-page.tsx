@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createAdminOrgAccount } from '../../services/admin/adminOrgAccounts.api';
+import './admin-org-account-create-page.css';
 
 type CreateOrgAccountForm = {
   organization_name: string;
@@ -88,197 +89,209 @@ export default function AdminOrgAccountCreatePage() {
   }
 
   return (
-    <div className="container">
-      <h1>Create Organization Account</h1>
+    <div className="admin-org-page">
+      <section className="admin-org-hero admin-org-card">
+        <div className="admin-org-hero-top">
+          <div>
+            <div className="admin-org-kicker">Admin Organization Accounts</div>
 
-      <p style={{ marginBottom: 20 }}>
-        Create a formal organization record for sponsor or host management, recurring
-        participation, and future organization-level workflows.
-      </p>
+            <h1 className="admin-org-title">
+              Create Organization Account
+            </h1>
 
-      <button
-        type="button"
-        className="btn-secondary"
-        onClick={() => navigate('/admin/org-accounts')}
-      >
-        Back to Org Accounts
-      </button>
-
-      <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
-        {error && <div className="field-error">{error}</div>}
-
-        <h2 style={{ marginTop: 30 }}>Organization Identity</h2>
-
-        <div className="form-grid two-col">
-          <div className="form-row">
-            <label htmlFor="organization_name">Organization Name *</label>
-            <input
-              id="organization_name"
-              type="text"
-              value={form.organization_name}
-              onChange={(e) => updateField('organization_name', e.target.value)}
-            />
+            <p className="admin-org-description">
+              Create a formal organization record for sponsor or host management,
+              recurring participation, and future organization-level workflows.
+            </p>
           </div>
 
-          <div className="form-row">
-            <label htmlFor="organization_type">Organization Type</label>
-            <input
-              id="organization_type"
-              type="text"
-              value={form.organization_type}
-              onChange={(e) => updateField('organization_type', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="contact_name">Contact Name</label>
-            <input
-              id="contact_name"
-              type="text"
-              value={form.contact_name}
-              onChange={(e) => updateField('contact_name', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="contact_email">Contact Email</label>
-            <input
-              id="contact_email"
-              type="email"
-              value={form.contact_email}
-              onChange={(e) => updateField('contact_email', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row" style={{ gridColumn: 'span 2' }}>
-            <label htmlFor="contact_phone">Contact Phone</label>
-            <input
-              id="contact_phone"
-              type="text"
-              value={form.contact_phone}
-              onChange={(e) => updateField('contact_phone', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <h2 style={{ marginTop: 40 }}>Location</h2>
-
-        <div className="form-grid two-col">
-          <div className="form-row">
-            <label htmlFor="city">City</label>
-            <input
-              id="city"
-              type="text"
-              value={form.city}
-              onChange={(e) => updateField('city', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="state_region">State / Region</label>
-            <input
-              id="state_region"
-              type="text"
-              value={form.state_region}
-              onChange={(e) => updateField('state_region', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row" style={{ gridColumn: 'span 2' }}>
-            <label htmlFor="country">Country</label>
-            <input
-              id="country"
-              type="text"
-              value={form.country}
-              onChange={(e) => updateField('country', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <h2 style={{ marginTop: 40 }}>Digital Presence</h2>
-
-        <div className="form-grid two-col">
-          <div className="form-row">
-            <label htmlFor="website_url">Website URL</label>
-            <input
-              id="website_url"
-              type="url"
-              value={form.website_url}
-              onChange={(e) => updateField('website_url', e.target.value)}
-            />
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="instagram_url">Instagram URL</label>
-            <input
-              id="instagram_url"
-              type="url"
-              value={form.instagram_url}
-              onChange={(e) => updateField('instagram_url', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <h2 style={{ marginTop: 40 }}>Account Controls</h2>
-
-        <div className="form-grid two-col">
-          <div className="form-row">
-            <label htmlFor="status">Status</label>
-            <select
-              id="status"
-              value={form.status}
-              onChange={(e) =>
-                updateField('status', e.target.value as CreateOrgAccountForm['status'])
-              }
-            >
-              <option value="pending">Pending</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-
-          <div className="form-row">
-            <label htmlFor="verification_status">Verification Status</label>
-            <select
-              id="verification_status"
-              value={form.verification_status}
-              onChange={(e) =>
-                updateField(
-                  'verification_status',
-                  e.target.value as CreateOrgAccountForm['verification_status']
-                )
-              }
-            >
-              <option value="unverified">Unverified</option>
-              <option value="verified">Verified</option>
-            </select>
-          </div>
-
-          <div className="form-row" style={{ gridColumn: 'span 2' }}>
-            <label htmlFor="notes">Internal Notes</label>
-            <textarea
-              id="notes"
-              value={form.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="form-actions">
           <button
             type="button"
             className="btn-secondary"
             onClick={() => navigate('/admin/org-accounts')}
           >
-            Cancel
-          </button>
-
-          <button type="submit" className="btn-primary" disabled={submitting}>
-            {submitting ? 'Creating...' : 'Create Organization Account'}
+            Back to Org Accounts
           </button>
         </div>
-      </form>
+      </section>
+
+      <section className="admin-org-card">
+        <form onSubmit={handleSubmit}>
+          {error && <div className="field-error">{error}</div>}
+
+          <h2>Organization Identity</h2>
+
+          <div className="form-grid two-col">
+            <div className="form-row">
+              <label htmlFor="organization_name">Organization Name *</label>
+              <input
+                id="organization_name"
+                type="text"
+                value={form.organization_name}
+                onChange={(e) => updateField('organization_name', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="organization_type">Organization Type</label>
+              <input
+                id="organization_type"
+                type="text"
+                value={form.organization_type}
+                onChange={(e) => updateField('organization_type', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="contact_name">Contact Name</label>
+              <input
+                id="contact_name"
+                type="text"
+                value={form.contact_name}
+                onChange={(e) => updateField('contact_name', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="contact_email">Contact Email</label>
+              <input
+                id="contact_email"
+                type="email"
+                value={form.contact_email}
+                onChange={(e) => updateField('contact_email', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row span-2">
+              <label htmlFor="contact_phone">Contact Phone</label>
+              <input
+                id="contact_phone"
+                type="text"
+                value={form.contact_phone}
+                onChange={(e) => updateField('contact_phone', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <h2>Location</h2>
+
+          <div className="form-grid two-col">
+            <div className="form-row">
+              <label htmlFor="city">City</label>
+              <input
+                id="city"
+                type="text"
+                value={form.city}
+                onChange={(e) => updateField('city', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="state_region">State / Region</label>
+              <input
+                id="state_region"
+                type="text"
+                value={form.state_region}
+                onChange={(e) => updateField('state_region', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row span-2">
+              <label htmlFor="country">Country</label>
+              <input
+                id="country"
+                type="text"
+                value={form.country}
+                onChange={(e) => updateField('country', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <h2>Digital Presence</h2>
+
+          <div className="form-grid two-col">
+            <div className="form-row">
+              <label htmlFor="website_url">Website URL</label>
+              <input
+                id="website_url"
+                type="url"
+                value={form.website_url}
+                onChange={(e) => updateField('website_url', e.target.value)}
+              />
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="instagram_url">Instagram URL</label>
+              <input
+                id="instagram_url"
+                type="url"
+                value={form.instagram_url}
+                onChange={(e) => updateField('instagram_url', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <h2>Account Controls</h2>
+
+          <div className="form-grid two-col">
+            <div className="form-row">
+              <label htmlFor="status">Status</label>
+              <select
+                id="status"
+                value={form.status}
+                onChange={(e) =>
+                  updateField('status', e.target.value as CreateOrgAccountForm['status'])
+                }
+              >
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="suspended">Suspended</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
+
+            <div className="form-row">
+              <label htmlFor="verification_status">Verification Status</label>
+              <select
+                id="verification_status"
+                value={form.verification_status}
+                onChange={(e) =>
+                  updateField(
+                    'verification_status',
+                    e.target.value as CreateOrgAccountForm['verification_status']
+                  )
+                }
+              >
+                <option value="unverified">Unverified</option>
+                <option value="verified">Verified</option>
+              </select>
+            </div>
+
+            <div className="form-row span-2">
+              <label htmlFor="notes">Internal Notes</label>
+              <textarea
+                id="notes"
+                value={form.notes}
+                onChange={(e) => updateField('notes', e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate('/admin/org-accounts')}
+            >
+              Cancel
+            </button>
+
+            <button type="submit" className="btn-primary" disabled={submitting}>
+              {submitting ? 'Creating...' : 'Create Organization Account'}
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
   );
 }
