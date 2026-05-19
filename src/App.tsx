@@ -61,7 +61,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/org" element={<ActivatedOrgPage />} />
+        <Route path="/org/:Uuid" element={<ActivatedOrgPage />} />
 
         <Route element={<PublicShell />}>
           {/* Public */}
