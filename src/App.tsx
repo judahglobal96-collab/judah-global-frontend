@@ -73,6 +73,8 @@ function App() {
           {/* Profile */}
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />
+          <Route path="/dashboard" element={<ProfilePage />} />
+
 
           {/* Admin */}
           <Route path="/admin" element={<AdminPage />} />
