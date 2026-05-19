@@ -65,7 +65,7 @@ function App() {
         <Route element={<OrgShell />}>
           <Route path="/org/:orgUuid" element={<ActivatedOrgPage />} />
           </Route>
-          
+
         <Route element={<PublicShell />}>
           {/* Public */}
           <Route path="/" element={<HomePage />} />
@@ -115,19 +115,19 @@ function App() {
 
           {/* Organization */}
           <Route path="/org/:orgUuid" element={<ActivatedOrgPage />} />
-          <Route path="/org/approved-events" element={<OrgApprovedEventsPage />} />
-          <Route path="/org/build-presence" element={<OrgBuildPresencePage />} />
-          <Route path="/org/submit-event" element={<OrgSubmitEventPage />} />
-          <Route path="/org/submit-event/basics" element={<OrgSubmitEventBasicsPage />} />
-          <Route path="/org/submit-event/location" element={<OrgSubmitEventLocationPage />} />
-          <Route path="/org/submit-event/schedule" element={<OrgSubmitEventSchedulePage />} />
-          <Route path="/org/submit-event/sponsor" element={<OrgSubmitEventSponsorPage />} />
-          <Route path="/org/submit-event/monetization" element={<OrgSubmitEventMonetizationPage />} />
-          <Route path="/org/submit-event/review" element={<OrgSubmitEventReviewPage />} />
-          <Route path="/org/submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
-          <Route path="/org/upload-media" element={<OrgUploadMediaPage />} />
-          <Route path="/org/promote-event/:eventId" element={<OrgPromoteEventPage />} />
-          <Route path="/org/edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
+          <Route path="/org/:orgUuid/approved-events" element={<OrgApprovedEventsPage />} />
+          <Route path="/org/:orgUuid/build-presence" element={<OrgBuildPresencePage />} />
+          <Route path="/org/:orgUuid/submit-event" element={<OrgSubmitEventPage />} />
+          <Route path="/org/:orgUuid/submit-event/basics" element={<OrgSubmitEventBasicsPage />} />
+          <Route path="/org/:orgUuid/submit-event/location" element={<OrgSubmitEventLocationPage />} />
+          <Route path="/org/:orgUuid/submit-event/schedule" element={<OrgSubmitEventSchedulePage />} />
+          <Route path="/org/:orgUuid/submit-event/sponsor" element={<OrgSubmitEventSponsorPage />} />
+          <Route path="/org/:orgUuid/submit-event/monetization" element={<OrgSubmitEventMonetizationPage />} />
+          <Route path="/org/:orgUuid/submit-event/review" element={<OrgSubmitEventReviewPage />} />
+          <Route path="/org/:orgUuid/submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
+          <Route path="/org/:orgUuid/upload-media" element={<OrgUploadMediaPage />} />
+          <Route path="/org/:orgUuid/promote-event/:eventId" element={<OrgPromoteEventPage />} />
+          <Route path="/org/:orgUuid/edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<NotFoundPage />} />
