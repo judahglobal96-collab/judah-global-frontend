@@ -53,6 +53,7 @@ import OrgUploadMediaPage from "./pages/org/org-upload-media-page";
 import OrgPromoteEventPage from "./pages/org/org-promote-event-page";
 import OrgEditEventMetadataPage from "./pages/org/org-edit-event-metadata-page";
 import RegisterOrganizationPage from "./pages/register-organization-page";
+import OrgShell from "./components/layout/org-shell";
 
 import VerifyOtpPage from "./pages/verify-otp-page";
 import NotFoundPage from "./pages/not-found-page";
@@ -61,8 +62,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/org/:Uuid" element={<ActivatedOrgPage />} />
-
+        <Route element={<OrgShell />}>
+          <Route path="/org/:orgUuid" element={<ActivatedOrgPage />} />
+          </Route>
+          
         <Route element={<PublicShell />}>
           {/* Public */}
           <Route path="/" element={<HomePage />} />
