@@ -26,6 +26,8 @@ import SubmitEventMonetizationPage from "./pages/submit-event-monetization-page"
 import SubmitEventReviewPage from "./pages/submit-event-review-page";
 import SubmitEventVerifyEmailPage from "./pages/submit-event-verify-email-page";
 import SubmitEventSuccessPage from "./pages/submit-event-success-page";
+import MyEventsPage from "./pages/account/my-events-page";
+import MajorEventsPage from "./pages/majorEventsPage";
 
 import AdminApprovedEventsPage from "./pages/admin/AdminApprovedEventsPage";
 import AdminMediaReviewPage from "./pages/admin/AdminMediaReviewPage";
@@ -63,6 +65,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/discover" element={<EventsDiscoveryPage />} />
+          <Route path="/major-events" element={<MajorEventsPage />} />
           <Route path="/events/:eventId" element={<EventDetailPage />} />
 
           {/* Auth */}
@@ -74,6 +77,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/edit" element={<EditProfilePage />} />
           <Route path="/dashboard" element={<ProfilePage />} />
+          <Route path="/account/my-events" element={<MyEventsPage />} />
 
 
           <Route element={<AdminShell />}>
