@@ -52,6 +52,7 @@ import OrgSubmitEventVerifyPage from "./pages/org/org-submit-event-verify-page";
 import OrgUploadMediaPage from "./pages/org/org-upload-media-page";
 import OrgPromoteEventPage from "./pages/org/org-promote-event-page";
 import OrgEditEventMetadataPage from "./pages/org/org-edit-event-metadata-page";
+import RegisterOrganizationPage from "./pages/register-organization-page";
 
 import VerifyOtpPage from "./pages/verify-otp-page";
 import NotFoundPage from "./pages/not-found-page";
@@ -66,6 +67,7 @@ function App() {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/discover" element={<EventsDiscoveryPage />} />
           <Route path="/major-events" element={<MajorEventsPage />} />
+          <Route path="/register-organization" element={<RegisterOrganizationPage />} />
           <Route path="/events/:eventId" element={<EventDetailPage />} />
 
           {/* Auth */}
