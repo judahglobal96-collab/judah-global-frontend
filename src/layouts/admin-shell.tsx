@@ -27,7 +27,7 @@ export default function AdminShell() {
             Overview
           </NavLink>
 
-          <NavLink to="/admin/review" style={navLinkStyle}>
+          <NavLink to="/admin/pending-events" style={navLinkStyle}>
             Pending Review
           </NavLink>
 
@@ -35,7 +35,7 @@ export default function AdminShell() {
             Media Review
           </NavLink>
 
-          <NavLink to="/admin/events" end style={navLinkStyle}>
+          <NavLink to="/admin/approved-events" end style={navLinkStyle}>
             Approved Events
           </NavLink>
 
@@ -43,7 +43,7 @@ export default function AdminShell() {
             Org Accounts
           </NavLink>
 
-          <NavLink to="/admin/payments" style={navLinkStyle}>
+          <NavLink to="/admin/event-payments" style={navLinkStyle}>
             Payments
           </NavLink>
 
@@ -51,7 +51,7 @@ export default function AdminShell() {
             Public Site
           </NavLink>
 
-          <NavLink to="/admin/events/rejected" style={navLinkStyle}>
+          <NavLink to="/admin/events/rejected-events" style={navLinkStyle}>
             Rejected Events
           </NavLink>
         </nav>
