@@ -38,7 +38,7 @@ export type CreateAdminOrgAccountPayload = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
-const ORG_ACCOUNTS_ENDPOINT = `${API_BASE}/admin/org-accounts`;
+const ORG_ACCOUNTS_ENDPOINT = `${API_BASE}/api/v1/org-accounts`;
 
 async function parseJson(res: Response) {
   const data = await res.json().catch(() => ({}));
