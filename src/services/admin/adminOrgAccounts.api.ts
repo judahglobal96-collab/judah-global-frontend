@@ -88,7 +88,7 @@ export type CreateAdminOrgAccountPayload = {
 export async function createAdminOrgAccount(payload: CreateAdminOrgAccountPayload) {
   const token = localStorage.getItem('auth_token');
 
-  const res = await fetch(`${API_BASE}/org-accounts`, {
+  const res = await fetch(`${API_BASE}/admin/org-accounts`, {
     method: 'POST',
     credentials: 'include',
     headers: {
