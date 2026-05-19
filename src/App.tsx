@@ -12,7 +12,6 @@ import SignupPage from "./pages/signup-page";
 import ProfilePage from "./pages/profile-page";
 import EditProfilePage from "./pages/edit-profile-page";
 
-import AdminPage from "./pages/admin-page";
 import AdminOverviewPage from "./pages/admin-overview-page";
 import AdminPendingEventsPage from "./pages/admin-pending-events-page";
 import AdminEventReviewPage from "./pages/admin-event-review-page";
@@ -77,7 +76,7 @@ function App() {
 
 
           {/* Admin */}
-          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin" element={<AdminOverviewPage />} />
           <Route path="/admin/overview" element={<AdminOverviewPage />} />
           <Route path="/admin/pending-events" element={<AdminPendingEventsPage />} />
           <Route path="/admin/review/:eventId" element={<AdminEventReviewPage />} />
