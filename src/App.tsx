@@ -61,6 +61,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/org" element={<ActivatedOrgPage />} />
+
         <Route element={<PublicShell />}>
           {/* Public */}
           <Route path="/" element={<HomePage />} />
@@ -109,7 +111,6 @@ function App() {
           <Route path="/submit-event/success" element={<SubmitEventSuccessPage />} />
 
           {/* Organization */}
-          <Route path="/org" element={<ActivatedOrgPage />} />
           <Route path="/org/:orgUuid" element={<ActivatedOrgPage />} />
           <Route path="/org/approved-events" element={<OrgApprovedEventsPage />} />
           <Route path="/org/build-presence" element={<OrgBuildPresencePage />} />
