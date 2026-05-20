@@ -169,7 +169,7 @@ export default function LoginPage() {
       >
         New to Judah Global?{" "}
         <a
-          href={`https://app.judahglobal.com/signup${
+          href={`https://app.judahglobal.org/signup${
             redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""
           }`}
           style={{
