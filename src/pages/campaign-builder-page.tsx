@@ -729,7 +729,7 @@ const campaignSubtotal = useMemo(() => {
       try {
         const token = localStorage.getItem("auth_token");
 
-        const response = await fetch(`${API_BASE}/calendar-availability`, {
+        const response = await fetch(`${API_BASE}/campaigns/calendar-availability`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
