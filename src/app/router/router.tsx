@@ -128,21 +128,9 @@ const router = createBrowserRouter([
       { path: "payment-success", element: <PaymentSuccessPage /> },
       { path: "organization-registration-success", element: <PaymentSuccessPage /> },
 
-      { 
-        path: "/campaign-builder", 
-        element: <CampaignBuilderPage /> 
-      },
-
-      { 
-        path: "/campaign-review", 
-        element: <CampaignReviewPage /> 
-      },
-
-      { 
-        path: "/campaign-payment-success", 
-        element: <CampaignPaymentSuccessPage /> 
-      },
-
+      { path: "campaign-builder", element: <CampaignBuilderPage />  },
+      { path: "campaign-review", element: <CampaignReviewPage />  },
+      { path: "campaign-payment-success", element: <CampaignPaymentSuccessPage /> },
       { path: "major-events", element: <MajorEventsPage /> },
       { path: "media-placement-guide", element: <MediaPlacementGuidePage /> },
 
