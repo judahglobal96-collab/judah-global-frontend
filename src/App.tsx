@@ -29,6 +29,9 @@ import SubmitEventSuccessPage from "./pages/submit-event-success-page";
 import MyEventsPage from "./pages/account/my-events-page";
 import MajorEventsPage from "./pages/majorEventsPage";
 import MediaPlacementGuide from "./pages/media-placement-guide-page";
+import CampaignBuilderPage from "./pages/campaign-builder-page";
+import CampaignReviewPage from "./pages/campaign-review-page";
+import CampaignPaymentSuccessPage from "./pages/campaign-payment-success-page";
 
 
 import AdminApprovedEventsPage from "./pages/admin/AdminApprovedEventsPage";
@@ -130,6 +133,12 @@ function App() {
           <Route path="/submit-event/review" element={<SubmitEventReviewPage />} />
           <Route path="/submit-event/verify-email" element={<SubmitEventVerifyEmailPage />} />
           <Route path="/submit-event/success" element={<SubmitEventSuccessPage />} />
+
+          {/* Campaign Builder */}
+          <Route path="/campaign-builder" element={<CampaignBuilderPage />} />
+          <Route path="/campaign-review" element={<CampaignReviewPage />} />
+          <Route path="/campaign-payment-success" element={<CampaignPaymentSuccessPage/>} />
+
 
 
           {/* Fallback */}
