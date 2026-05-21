@@ -128,9 +128,6 @@ const router = createBrowserRouter([
       { path: "payment-success", element: <PaymentSuccessPage /> },
       { path: "organization-registration-success", element: <PaymentSuccessPage /> },
 
-      { path: "campaign-builder", element: <CampaignBuilderPage />  },
-      { path: "campaign-review", element: <CampaignReviewPage />  },
-      { path: "campaign-payment-success", element: <CampaignPaymentSuccessPage /> },
       { path: "major-events", element: <MajorEventsPage /> },
       { path: "media-placement-guide", element: <MediaPlacementGuidePage /> },
 
@@ -182,6 +179,10 @@ const router = createBrowserRouter([
       { path: "submit-event/monetization", element: <OrgSubmitEventMonetizationPage /> },
       { path: "submit-event/review", element: <OrgSubmitEventReviewPage /> },
       { path: "submit-event/verify/:eventId", element: <OrgSubmitEventVerifyPage /> },
+
+      { path: "campaign-builder", element: <CampaignBuilderPage />  },
+      { path: "campaign-review", element: <CampaignReviewPage />  },
+      { path: "campaign-payment-success", element: <CampaignPaymentSuccessPage /> },
 
       { path: "media-placement-guide", element: <MediaPlacementGuidePage /> },
     ],
