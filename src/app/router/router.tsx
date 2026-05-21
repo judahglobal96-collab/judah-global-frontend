@@ -133,6 +133,10 @@ const router = createBrowserRouter([
       { path: "organization-registration-success", element: <PaymentSuccessPage /> },
 
       { path: "major-events", element: <MajorEventsPage /> },
+      { path: "campaign-builder", element: <CampaignBuilderPage />  },
+      { path: "campaign-review", element: <CampaignReviewPage />  },
+      { path: "campaign-payment-success", element: <CampaignPaymentSuccessPage /> },
+
       { path: "media-placement-guide", element: <MediaPlacementGuidePage /> },
 
       {
