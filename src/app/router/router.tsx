@@ -188,7 +188,7 @@ const router = createBrowserRouter([
       { path: "submit-event/review", element: <OrgSubmitEventReviewPage /> },
       { path: "submit-event/verify/:eventId", element: <OrgSubmitEventVerifyPage /> },
 
-      { path: "campaign-builder", element: <CampaignBuilderPage />  },
+      { path: "org/{orgUuid}/campaign-builder", element: <CampaignBuilderPage />  },
       { path: "campaign-review", element: <CampaignReviewPage />  },
       { path: "campaign-payment-success", element: <CampaignPaymentSuccessPage /> },
 
