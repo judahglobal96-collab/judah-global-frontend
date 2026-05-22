@@ -215,8 +215,29 @@ export function saveSubmitEventDraft(
     },
   };
 
+    const eventId =
+      (next as any).eventId ||
+      (next as any).event_id ||
+      (next as any).id ||
+      (next.basics as any)?.eventId ||
+      (next.basics as any)?.event_id;
+
+    if (eventId) {
+      localStorage.setItem("judah_event_id", eventId);
+      localStorage.setItem("judah_submission_id", eventId);
+    }
+
+    const orgUuid =
+      (next as any).orgUuid ||
+      (next.basics as any)?.orgUuid ||
+      (next.basics as any)?.org_uuid;
+
+if (orgUuid) {
+  localStorage.setItem("judah_org_uuid", orgUuid);
+}
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   return next;
+
 }
 
 export function clearSubmitEventDraft() {
