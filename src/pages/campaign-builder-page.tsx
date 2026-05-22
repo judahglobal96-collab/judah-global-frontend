@@ -1285,6 +1285,10 @@ if (validationMessage) {
       const createdCampaignCode = data?.campaign?.campaign_code || null;
       const createdItems = Array.isArray(data?.items) ? data.items : [];
 
+      if (createdCampaignId) {
+      localStorage.setItem("judah_campaign_id", createdCampaignId);
+      }
+
       if (!createdCampaignId) {
         throw new Error("Campaign ID was not returned.");
       }
