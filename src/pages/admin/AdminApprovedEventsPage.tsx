@@ -28,7 +28,7 @@ export default function AdminApprovedEventsPage() {
       setError("");
 
       const response = await fetch(
-        "${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/approved-events"
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/approved-events`
       );
 
       const rawText = await response.text();

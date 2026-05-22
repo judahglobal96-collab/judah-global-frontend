@@ -14,7 +14,7 @@ type AdminEvent = {
   rejection_reason?: string | null;
 };
 
-const API_BASE = "${import.meta.env.VITE_API_BASE_URL}/api/v1";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
 export default function AdminOverviewPage() {
   const navigate = useNavigate();

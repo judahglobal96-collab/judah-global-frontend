@@ -22,7 +22,7 @@ export default function AdminPendingEventsPage() {
 
   async function loadPendingEvents() {
     try {
-      const response = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending");
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending`);
       const data = await response.json();
       setEvents(data);
     } catch (error) {

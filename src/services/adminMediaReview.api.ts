@@ -3,7 +3,7 @@ import type {
   MediaModerationStatus,
 } from '../types/adminMediaReview';
 
-const API_BASE = '${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/media-review';
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/media-review`;
 
 export interface FetchAdminMediaReviewParams {
   status?: MediaModerationStatus | 'all';
