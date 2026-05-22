@@ -92,7 +92,7 @@ const HOMEPAGE_TOP_ORG_DOLLARS = 209;
 const DISCOVERY_TOP_ORG_DOLLARS = 209;
 const ORG_SUBSCRIPTION_DOLLARS = 299;
 
-const API_BASE = `${import.meta.env.VITE_API_BASE_URL}`;
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1/campaigns`;
 
 const REGIONS: Array<{
   value: RegionCode;
