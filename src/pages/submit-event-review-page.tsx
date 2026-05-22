@@ -169,7 +169,7 @@ export default function SubmitEventReviewPage() {
       const token = localStorage.getItem("auth_token");
 
       const res = await fetch(
-        "${import.meta.env.VITE_API_BASE_URL}/api/v1/event-payments/checkout-session",
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/event-payments/checkout-session`,
         {
           method: "POST",
           headers: {

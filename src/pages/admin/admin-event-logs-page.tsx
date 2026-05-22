@@ -23,7 +23,7 @@ type AdminEvent = {
   payment_status?: string | null;
 };
 
-const API_BASE = "${import.meta.env.VITE_API_BASE_URL}/api/v1";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
 function getLogCategory(actionType?: string) {
   const value = String(actionType || "").toLowerCase();

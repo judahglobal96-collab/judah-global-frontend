@@ -102,7 +102,7 @@ type ReviewLocationState = {
   builderDraft?: BuilderDraft;
 };
 
-const API_BASE = "${import.meta.env.VITE_API_BASE_URL}/api/v1/campaigns";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1/campaigns`;
 
 const EVENT_FEE_DOLLARS = 79;
 const FEATURED_BADGE_PUBLIC_DOLLARS = 109;
