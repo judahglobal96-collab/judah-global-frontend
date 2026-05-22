@@ -78,7 +78,7 @@ export default function RegisterOrganizationPage() {
 
     try {
       const registerRes = await fetch(
-        "${import.meta.env.VITE_API_BASE_URL}/api/v1/org-accounts/public-register",
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/org-accounts/public-register`,
         {
           method: "POST",
           headers: {
@@ -106,7 +106,7 @@ export default function RegisterOrganizationPage() {
       console.log("SUB REGION:", selectedRegion.value);
       
       const paymentRes = await fetch(
-        "${import.meta.env.VITE_API_BASE_URL}/api/v1/payments/org-subscription-checkout",
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/payments/org-subscription-checkout`,
         {
           method: "POST",
           headers: {

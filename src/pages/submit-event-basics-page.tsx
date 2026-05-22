@@ -111,7 +111,7 @@ export default function SubmitEventBasicsPage() {
       setSaving(true);
 
       const response = await fetch(
-        "${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/draft",
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/draft`,
         {
           method: "POST",
           headers: {

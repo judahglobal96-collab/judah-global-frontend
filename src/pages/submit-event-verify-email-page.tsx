@@ -28,7 +28,7 @@ type ResendOtpResponse = {
 };
 
 const API_BASE =
-  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "${import.meta.env.VITE_API_BASE_URL}";
+  import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") || "";
 
 const OTP_LENGTH = 6;
 const RESEND_SECONDS = 60;
@@ -213,7 +213,7 @@ const sponsorEmail =
       code,
     });
 
-    const res = await fetch("${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/verify-email-otp", {
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/event-submissions/verify-email-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
