@@ -1163,6 +1163,10 @@ const campaignSubtotal = useMemo(() => {
       duration_days?: number | null;
     }>
   ) {
+    if (!campaignId) {
+    console.warn("Skipping promo media upload: campaignId missing");
+    return;
+}
     const token = localStorage.getItem("auth_token");
 
     for (let index = 0; index < items.length; index += 1) {
@@ -1281,7 +1285,11 @@ if (validationMessage) {
         throw new Error(data?.message || "Unable to continue to review.");
       }
 
-      const createdCampaignId = data?.campaign?.id;
+      const createdCampaignId = 
+      data?.campaign?.id ||
+      data?.campaignId||
+      data?.campaign_id ||
+      data?.id;
       const createdCampaignCode = data?.campaign?.campaign_code || null;
       const createdItems = Array.isArray(data?.items) ? data.items : [];
 
