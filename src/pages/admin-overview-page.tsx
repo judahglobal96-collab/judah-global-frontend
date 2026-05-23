@@ -201,7 +201,7 @@ export default function AdminOverviewPage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <Link to="/admin/pending-events">Open Pending Queue</Link>
-            <Link to="/admin/rejected">Open Rejected Events</Link>
+            <Link to="/admin/rejected-events">Open Rejected Events</Link>
             <Link to="/admin/approved-events">Open Approved Events</Link>
             <Link to="/events">View Public Events</Link>
           </div>
@@ -227,7 +227,7 @@ export default function AdminOverviewPage() {
             }}
           >
             <h2 style={{ margin: 0 }}>Pending Review Queue</h2>
-            <Link to="/admin/events/pending">View Full Queue</Link>
+            <Link to="/admin/pending-events">View Full Queue</Link>
           </div>
 
           {pendingError ? <p>{pendingError}</p> : null}
@@ -282,7 +282,7 @@ export default function AdminOverviewPage() {
             }}
           >
             <h2 style={{ margin: 0 }}>Rejected Events</h2>
-            <Link to="/admin/events/rejected">View Rejected Events</Link> 
+            <Link to="/admin/rejected-events">View Rejected Events</Link> 
           </div>
 
           {rejectedError ? <p>{rejectedError}</p> : null}
