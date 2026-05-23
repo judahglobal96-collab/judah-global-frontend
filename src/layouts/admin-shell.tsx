@@ -51,7 +51,7 @@ export default function AdminShell() {
             Public Site
           </NavLink>
 
-          <NavLink to="/admin/events/rejected-events" style={navLinkStyle}>
+          <NavLink to="/admin/rejected-events" style={navLinkStyle}>
             Rejected Events
           </NavLink>
         </nav>
