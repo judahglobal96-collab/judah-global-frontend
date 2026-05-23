@@ -113,6 +113,7 @@ function App() {
             <Route path="/admin/overview" element={<AdminOverviewPage />} />
             <Route path="/admin/pending-events" element={<AdminPendingEventsPage />} />
             <Route path="/admin/review/:eventId" element={<AdminEventReviewPage />} />
+            <Route path="/admin/events/:eventId" element={<AdminEventReviewPage />} />
             <Route path="/admin/approved-events" element={<AdminApprovedEventsPage />} />
             <Route path="/admin/media-review" element={<AdminMediaReviewPage />} />
             <Route path="/admin/event-payments" element={<AdminEventPaymentsPage />} />

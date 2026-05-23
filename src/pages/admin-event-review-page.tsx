@@ -370,7 +370,7 @@ export default function AdminEventReviewPage() {
           </button>
 
           <Link
-            to={`/admin/events/${event.id}/logs`}
+            to={`/admin/event/${event.id}/logs`}
             style={{
               display: "inline-flex",
               alignItems: "center",
