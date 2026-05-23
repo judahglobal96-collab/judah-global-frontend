@@ -124,7 +124,7 @@ function App() {
             <Route path="/admin/org-accounts/new" element={<AdminOrgAccountCreatePage />} />
             <Route path="/admin/paid-promos" element={<PaidPromosPage />} />
             <Route path="/admin/event-logs" element={<AdminEventLogsPage />}  />
-            
+            <Route path="/admin/event/:eventId/logs" element={<AdminEventLogsPage />}  />
             <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
           </Route>
 
