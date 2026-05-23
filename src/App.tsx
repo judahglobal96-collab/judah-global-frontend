@@ -42,6 +42,8 @@ import AdminOrgAccountsPage from "./pages/admin/admin-org-accounts-page";
 import AdminOrgAccountCreatePage from "./pages/admin/admin-org-account-create-page";
 import PaidPromosPage from "./pages/admin/paid-promos-page";
 import SupportLookupPage from "./pages/admin/support-lookup-page";
+import AdminEventLogsPage from "./pages/admin/admin-event-logs-page";
+
 
 import ActivatedOrgPage from "./pages/org/activated-org-page";
 import OrgApprovedEventsPage from "./pages/org/org-approved-events-page";
@@ -121,6 +123,8 @@ function App() {
             <Route path="/admin/org-accounts" element={<AdminOrgAccountsPage />} />
             <Route path="/admin/org-accounts/new" element={<AdminOrgAccountCreatePage />} />
             <Route path="/admin/paid-promos" element={<PaidPromosPage />} />
+            <Route path="/admin/event-logs" element={<AdminEventLogsPage />}  />
+            
             <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
           </Route>
 
