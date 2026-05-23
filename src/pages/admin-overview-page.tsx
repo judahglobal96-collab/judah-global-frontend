@@ -200,8 +200,8 @@ export default function AdminOverviewPage() {
             Quick Actions
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <Link to="/admin/events/pending-events">Open Pending Queue</Link>
-            <Link to="/admin/events/rejected">Open Rejected Events</Link>
+            <Link to="/admin/pending-events">Open Pending Queue</Link>
+            <Link to="/admin/rejected">Open Rejected Events</Link>
             <Link to="/admin/approved-events">Open Approved Events</Link>
             <Link to="/events">View Public Events</Link>
           </div>
