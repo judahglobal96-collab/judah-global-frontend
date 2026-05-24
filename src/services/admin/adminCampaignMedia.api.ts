@@ -69,6 +69,7 @@ export async function fetchCampaignMediaQueue(
   }
 
   const data = await response.json();
+
   const rawMedia = Array.isArray(data?.items)
     ? data.items
     : Array.isArray(data?.media)
