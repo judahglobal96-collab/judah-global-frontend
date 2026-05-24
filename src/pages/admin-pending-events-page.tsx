@@ -22,16 +22,35 @@ export default function AdminPendingEventsPage() {
 
   async function loadPendingEvents() {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending`);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending`,
+        {
+          credentials: 'include',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to load pending events: ${response.status}`);
+      }
+
       const data = await response.json();
-      setEvents(data);
+
+      const pendingEvents = Array.isArray(data)
+        ? data
+        : Array.isArray(data.events)
+          ? data.events
+          : Array.isArray(data.pendingEvents)
+            ? data.pendingEvents
+            : [];
+
+      setEvents(pendingEvents);
     } catch (error) {
-      console.error("Failed to load pending events:", error);
+      console.error('Failed to load pending events:', error);
+      setEvents([]);
     } finally {
       setLoading(false);
     }
   }
-
   if (loading) {
     return <div style={{ padding: 32 }}>Loading pending events...</div>;
   }
