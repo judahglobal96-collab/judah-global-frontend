@@ -22,13 +22,22 @@ export default function AdminPendingEventsPage() {
 
   async function loadPendingEvents() {
     try {
+      const token =
+        localStorage.getItem('token') ||
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('accessToken');
+
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending`,
         {
           credentials: 'include',
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
         },
       );
-
       if (!response.ok) {
         throw new Error(`Failed to load pending events: ${response.status}`);
       }
