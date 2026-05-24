@@ -23,6 +23,7 @@ export default function AdminPendingEventsPage() {
   async function loadPendingEvents() {
     try {
       const token =
+        localStorage.getItem('auth_token') ||
         localStorage.getItem('token') ||
         localStorage.getItem('authToken') ||
         localStorage.getItem('accessToken');
