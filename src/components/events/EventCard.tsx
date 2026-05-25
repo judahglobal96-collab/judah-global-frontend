@@ -431,10 +431,6 @@ export default function EventCard(props: EventCardProps) {
             borderTop: "1px solid #f1f5f9",
           }}
         >
-          <Link
-            to={`/event/${event.id}`}
-            style={{textDecoration: "none" }}
-          >
             <span
             style={{
               fontSize: 13,
@@ -444,13 +440,8 @@ export default function EventCard(props: EventCardProps) {
           >
             Explore event details →
             </span>
-          </Link>
 
 
-          <Link
-            to={`/event/${event.id}`}
-            style={{textDecoration: "none" }}
-          >
             <span
             style={{
               fontSize: 14,
@@ -461,7 +452,6 @@ export default function EventCard(props: EventCardProps) {
           >
             View Details →
             </span>
-          </Link>
         </div>
       </div>
     </article>
