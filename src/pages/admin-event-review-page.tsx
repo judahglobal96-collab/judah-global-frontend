@@ -146,16 +146,25 @@ export default function AdminEventReviewPage() {
     try {
       setWorking(true);
 
+          const token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("accessToken");
+
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}/reject`,
         {
           method: "PATCH",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            ...(token
+              ? { Authorization: `Bearer ${token}` }
+              : {}),
           },
         }
       );
-
       let data: any = {};
 
       try {
@@ -170,7 +179,7 @@ export default function AdminEventReviewPage() {
         );
       }
 
-      navigate("/admin/events/pending");
+      navigate("/admin/events/rejected-events");
     } catch (error) {
       console.error("Reject failed:", error);
 
