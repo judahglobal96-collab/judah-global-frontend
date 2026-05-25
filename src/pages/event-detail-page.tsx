@@ -31,7 +31,9 @@ type EventDetail = {
 };
 
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
-const EVENTS_BASE_URL = `${API_BASE_URL}/api/v1/events`;
+
+const getEventUrl = (eventId: string) =>
+  `${'API_BASE_URI'}/api/v1/events/${eventId}`;
 const DEFAULT_FALLBACK_IMAGE = "/images/judah-default-fallback.png";
 const FEATURED_FALLBACK_IMAGE = "/images/judah-featured-fallback.png";
 
@@ -127,8 +129,8 @@ export default function EventDetailPage() {
         setLoading(true);
         setError("");
 
-        const res = await fetch(`${EVENTS_BASE_URL}/${eventId}`);
-        const data = await res.json();
+      const res = await fetch(getEventUrl(eventId));        
+      const data = await res.json();
 
         if (!res.ok) {
           throw new Error(data.error || "Failed to load event");
