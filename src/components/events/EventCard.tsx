@@ -151,7 +151,7 @@ function normalizeEventFromProps(props: EventCardProps): EventCardItem {
 
 async function trackEventClick(eventId: string, source: string) {
   try {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`, 
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/event-engagement/click`, 
       {
       method: "POST",
       headers: {
