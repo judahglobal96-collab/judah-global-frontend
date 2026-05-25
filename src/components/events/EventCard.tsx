@@ -176,7 +176,7 @@ export default function EventCard(props: EventCardProps) {
   const engagementSource = props.engagementSource || "discovery";
 
   const eventId = event.event_id || event.id;
-  const href = eventId ? `/event/${eventId}` : "#";
+  const href = eventId ? `/events/${eventId}` : "#";
 
   const heroImage = useMemo(() => {
     return (
