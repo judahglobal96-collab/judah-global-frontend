@@ -179,7 +179,7 @@ export default function AdminEventReviewPage() {
         );
       }
 
-      navigate("/admin/events/rejected-events");
+      navigate("/admin/events/rejected");
     } catch (error) {
       console.error("Reject failed:", error);
 
