@@ -481,7 +481,7 @@ export default function EventCard(props: EventCardProps) {
         void trackEventClick(eventId, engagementSource);
       }}
     >
-      {cardInner}
+      <span> View Details →</span>
     </Link>
   );
 }
