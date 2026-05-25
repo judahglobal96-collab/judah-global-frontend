@@ -27,8 +27,22 @@ export default function AdminApprovedEventsPage() {
       setLoading(true);
       setError("");
 
+      const token =
+        localStorage.getItem('auth_token') ||
+        localStorage.getItem('token') ||
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('accessToken');
+
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/approved-events`
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/approved`,
+        {
+          credentials: 'include',
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        }
       );
 
       const rawText = await response.text();

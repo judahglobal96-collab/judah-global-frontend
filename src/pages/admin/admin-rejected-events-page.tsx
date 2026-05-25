@@ -29,7 +29,21 @@ export default function AdminRejectedEventsPage() {
       setLoading(true);
       setError("");
 
-      const res = await fetch(`${API_BASE}/admin/events/rejected`);
+            const token =
+        localStorage.getItem('auth_token') ||
+        localStorage.getItem('token') ||
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('accessToken');
+
+      const res = await fetch(`${API_BASE}/admin/events/rejected`, {
+        credentials: 'include',
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
+      });
+      
       const data = await res.json();
 
       if (!res.ok) {

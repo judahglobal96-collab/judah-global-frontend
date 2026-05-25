@@ -64,10 +64,24 @@ export default function AdminEventReviewPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}`
-      );
+      const token =
+        localStorage.getItem('auth_token') ||
+        localStorage.getItem('token') ||
+        localStorage.getItem('authToken') ||
+        localStorage.getItem('accessToken');
 
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/${eventId}`,
+        {
+          credentials: 'include',
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        }
+      );
+      
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
