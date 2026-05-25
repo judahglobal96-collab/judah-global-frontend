@@ -30,7 +30,7 @@ type EventDetail = {
   logo_url?: string;
 };
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const getEventUrl = (eventId: string) =>
   `${API_BASE_URL}/api/v1/events/${eventId}`;
