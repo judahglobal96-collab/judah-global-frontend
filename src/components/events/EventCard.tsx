@@ -170,6 +170,8 @@ async function trackEventClick(eventId: string, source: string) {
 
 export default function EventCard(props: EventCardProps) {
   const event = normalizeEventFromProps(props);
+  console.log("EVENT CARD DATA", event);
+  
   const engagementSource = props.engagementSource || "discovery";
 
   const eventId = event.event_id || event.id;
