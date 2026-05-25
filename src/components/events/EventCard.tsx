@@ -151,7 +151,8 @@ function normalizeEventFromProps(props: EventCardProps): EventCardItem {
 
 async function trackEventClick(eventId: string, source: string) {
   try {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/event-engagement/click`, {
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}`, 
+      {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -171,7 +172,7 @@ async function trackEventClick(eventId: string, source: string) {
 export default function EventCard(props: EventCardProps) {
   const event = normalizeEventFromProps(props);
   console.log("EVENT CARD DATA", event);
-  
+
   const engagementSource = props.engagementSource || "discovery";
 
   const eventId = event.event_id || event.id;
@@ -483,7 +484,7 @@ export default function EventCard(props: EventCardProps) {
         void trackEventClick(eventId, engagementSource);
       }}
     >
-      <span> View Details →</span>
+        {cardInner}
     </Link>
   );
 }
