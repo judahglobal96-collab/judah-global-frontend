@@ -33,7 +33,7 @@ type EventDetail = {
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}`;
 
 const getEventUrl = (eventId: string) =>
-  `${'API_BASE_URI'}/api/v1/events/${eventId}`;
+  `${API_BASE_URL}/api/v1/events/${eventId}`;
 const DEFAULT_FALLBACK_IMAGE = "/images/judah-default-fallback.png";
 const FEATURED_FALLBACK_IMAGE = "/images/judah-featured-fallback.png";
 
