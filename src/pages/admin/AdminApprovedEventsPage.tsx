@@ -34,7 +34,7 @@ export default function AdminApprovedEventsPage() {
         localStorage.getItem('accessToken');
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/approved`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/approved-events`,
         {
           credentials: 'include',
           headers: token
