@@ -769,8 +769,9 @@ export default function EventsDiscoveryPage() {
             style={{
               display: "grid",
               gap: 22,
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              alignItems: "stretch",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 360px))",
+              justifyContent: "center",
+              alignItems: "start",
             }}
           >
             {events.map((event, index) => {
