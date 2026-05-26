@@ -65,11 +65,6 @@ import AdminSupportLookupPage from "../../pages/admin/support-lookup-page";
 
 
 const router = createBrowserRouter([
-  {
-    
-  path: "/event/:eventId",
-  element: <div style={{ padding: 40 }}>EVENT ROUTE MATCHED</div>,
-},
 {
     path: "/",
     element: <PublicShell />,
