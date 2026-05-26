@@ -431,27 +431,29 @@ export default function EventCard(props: EventCardProps) {
             borderTop: "1px solid #f1f5f9",
           }}
         >
-            <span
-            style={{
-              fontSize: 13,
-              color: "#64748b",
-              fontWeight: 600,
-            }}
-          >
-            Explore event details →
-            </span>
+              <Link
+                to={`/event/${event.event_id}`}
+                style={{
+                  fontSize: 13,
+                  color: "#64748b",
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                Explore event details →
+              </Link>
 
-
-            <span
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#0f172a",
-            
-            }}
-          >
-            View Details →
-            </span>
+            <Link
+              to={`/event/${event.event_id}`}
+              style={{
+                fontSize: 14,
+                fontWeight: 700,
+                color: "#0f172a",
+                textDecoration: "none",
+              }}
+            >
+              View Details →
+            </Link>
         </div>
       </div>
     </article>
