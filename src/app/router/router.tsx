@@ -66,22 +66,13 @@ import AdminSupportLookupPage from "../../pages/admin/support-lookup-page";
 
 const router = createBrowserRouter([
   {
-    
-  path: "/event/:eventId",
-  element: <div style={{ padding: 40 }}>EVENT ROUTE MATCHED</div>,
-},
-{
     path: "/",
     element: <PublicShell />,
     children: [
-      {
-  path: "route-test",
-  element: <div style={{ padding: 40 }}>Route test works</div>,
-},
       { index: true, element: <HomePage /> },
       { path: "register-organization", element: <RegisterOrganizationPage /> },
       { path: "events", element: <EventsDiscoveryPage /> },
-      { path: "/event/:eventId", element: <EventDetailPage /> },
+      { path: "event/:eventId", element: <EventDetailPage /> },
 
       {
         path: "account/my-events",
@@ -119,8 +110,8 @@ const router = createBrowserRouter([
           { path: "org-accounts/new", element: <AdminOrgAccountCreatePage /> },
           { path: "events/rejected", element: <AdminRejectedEventsPage /> },
           { path: "events/:eventId/logs", element: <AdminEventLogsPage /> },
-          { path: "/admin/events/:eventId/paid-promos", element: <AdminPaidPromosPage />},
-          { path: "/admin/support-lookup", element: <AdminSupportLookupPage />},
+          { path: "events/:eventId/paid-promos", element: <AdminPaidPromosPage />},
+          { path: "support-lookup", element: <AdminSupportLookupPage />},
         ],
       },
 
@@ -208,3 +199,4 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+
