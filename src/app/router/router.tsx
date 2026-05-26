@@ -65,6 +65,11 @@ import AdminSupportLookupPage from "../../pages/admin/support-lookup-page";
 
 
 const router = createBrowserRouter([
+
+        {
+        path: "event/:eventId/*",
+        element: <EventDetailPage />,
+      },
 {
     path: "/",
     element: <PublicShell />,
@@ -73,10 +78,6 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "register-organization", element: <RegisterOrganizationPage /> },
       { path: "events", element: <EventsDiscoveryPage /> },
-      {
-        path: "event/:eventId/*",
-        element: <EventDetailPage />,
-      },
 
       {
         path: "account/my-events",
