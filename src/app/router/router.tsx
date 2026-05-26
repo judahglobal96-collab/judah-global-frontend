@@ -63,14 +63,9 @@ import MediaPlacementGuidePage from "../../pages/media-placement-guide-page";
 import AdminPaidPromosPage from "../../pages/admin/paid-promos-page";
 import AdminSupportLookupPage from "../../pages/admin/support-lookup-page";
 
-
 const router = createBrowserRouter([
 
         {
-        path: "event/:eventId",
-        element: <EventDetailPage />,
-      },
-{
     path: "/",
     element: <PublicShell />,
     children: [
@@ -78,7 +73,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "register-organization", element: <RegisterOrganizationPage /> },
       { path: "events", element: <EventsDiscoveryPage /> },
-
+    
       {
         path: "account/my-events",
         element: (
@@ -120,6 +115,7 @@ const router = createBrowserRouter([
         ],
       },
 
+      { path: "event/:eventId", element: <EventDetailPage /> },
       { path: "submit-event", element: <SubmitEventPage /> },
       { path: "submit-event/basics", element: <SubmitEventBasicsPage /> },
       { path: "submit-event/:eventId/schedule", element: <SubmitEventSchedulePage /> },

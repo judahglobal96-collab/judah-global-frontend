@@ -116,7 +116,7 @@ console.log("EVENT DETAIL PAGE MOUNTED");
 
 console.log("EVENT DETAIL PAGE MOUNTED");
 console.log("EVENT ID:", eventId);
-console.log("EVENT URL:", `${API_BASE_URL}/api/v1/event/${eventId}`);
+console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
 
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
