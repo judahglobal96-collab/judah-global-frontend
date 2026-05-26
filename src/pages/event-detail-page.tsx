@@ -30,7 +30,7 @@ type EventDetail = {
   logo_url?: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 const getEventUrl = (eventId: string) =>
   `${API_BASE_URL}/api/v1/events/${eventId}`;
@@ -81,13 +81,15 @@ function buildCommaLine(parts: Array<string | undefined>) {
     .join(", ");
 }
 
-function DetailInfoCard({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function DetailInfoCard(
+  {
+    label,
+    children,
+  }: {
+    label: string;
+    children: React.ReactNode;
+  }
+) {
   return (
     <div
       style={{
@@ -770,17 +772,18 @@ export default function EventDetailPage() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "relative",
-                width: "min(96vw, 900px)",
-                maxHeight: "92vh",
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 12,
-                padding: "8px 4px 16px",
-              }}          >
+            style={{
+              position: "relative",
+              width: "min(96vw, 900px)",
+              maxHeight: "92vh",
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+              padding: "8px 4px 16px",
+            }}
+          >
             <button
               type="button"
               onClick={() => setIsImageModalOpen(false)}
@@ -815,25 +818,12 @@ export default function EventDetailPage() {
                 maxHeight: "calc(92vh - 80px)",
                 width: "auto",
                 height: "auto",
-                objectFit: "contain",
-                margin: "0 auto",
-                borderRadius: 16,
-                background: "#ffffff",
-                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.35)",
               }}
-              />
-            <div
-              style={{
-                color: "#e2e8f0",
-                fontSize: 13,
-                textAlign: "center",
-              }}
-            >
-              Click outside the image or press Esc to close
-            </div>
+            />
           </div>
         </div>
       )}
     </>
   );
 }
+
