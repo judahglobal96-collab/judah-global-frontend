@@ -67,7 +67,7 @@ import AdminSupportLookupPage from "../../pages/admin/support-lookup-page";
 const router = createBrowserRouter([
 
         {
-        path: "event/:eventId/",
+        path: "event/:eventId",
         element: <EventDetailPage />,
       },
 {
