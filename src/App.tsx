@@ -96,7 +96,7 @@ function App() {
           <Route path="/discover" element={<EventsDiscoveryPage />} />
           <Route path="/major-events" element={<MajorEventsPage />} />
           <Route path="/register-organization" element={<RegisterOrganizationPage />} />
-          <Route path="/events/:eventId" element={<EventDetailPage />} />
+          <Route path="/event/:eventId" element={<EventDetailPage />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
