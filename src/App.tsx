@@ -97,6 +97,7 @@ function App() {
           <Route path="/major-events" element={<MajorEventsPage />} />
           <Route path="/register-organization" element={<RegisterOrganizationPage />} />
           <Route path="/event/:eventId" element={<EventDetailPage />} />
+          <Route path="media-placement-guide" element={<MediaPlacementGuide />} />
 
           {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
