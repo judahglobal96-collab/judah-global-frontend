@@ -69,14 +69,11 @@ const router = createBrowserRouter([
     path: "/",
     element: <PublicShell />,
     children: [
-      {
-  path: "route-test",
-  element: <div style={{ padding: 40 }}>Route test works</div>,
-},
+
       { index: true, element: <HomePage /> },
       { path: "register-organization", element: <RegisterOrganizationPage /> },
       { path: "events", element: <EventsDiscoveryPage /> },
-      { path: "/event/:eventId", element: <EventDetailPage /> },
+      { path: "event/:eventId", element: <EventDetailPage /> },
 
       {
         path: "account/my-events",
