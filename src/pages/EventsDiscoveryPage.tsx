@@ -334,18 +334,7 @@ export default function EventsDiscoveryPage() {
       const country = currentFilters.country.trim();
       const category = currentFilters.category.trim();
 
-      const supportRegion = getSupportRegion();
-
-      const hasUserSearch =
-        Boolean(search) ||
-        Boolean(city) ||
-        Boolean(stateRegion) ||
-        Boolean(country) ||
-        Boolean(category);
-
-      const effectiveCountry =
-        country || (!hasUserSearch ? supportRegion : "");
-
+      const effectiveCountry = country;
 
       if (search) params.set("q", search);
       if (city) params.set("city", city);
@@ -354,7 +343,7 @@ export default function EventsDiscoveryPage() {
       if (effectiveCountry) {
         params.set("country", effectiveCountry);
       }
-      
+
       if (category) params.set("category", category);
 
       const res = await fetch(
