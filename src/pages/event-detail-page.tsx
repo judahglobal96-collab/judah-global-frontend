@@ -110,6 +110,14 @@ function DetailInfoCard({
 export default function EventDetailPage() {
   const { eventId } = useParams();
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+
+console.log("EVENT DETAIL PAGE MOUNTED");
+
+console.log("EVENT DETAIL PAGE MOUNTED");
+console.log("EVENT ID:", eventId);
+console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
+
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
