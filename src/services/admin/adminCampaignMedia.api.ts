@@ -82,11 +82,15 @@ export async function fetchCampaignMediaQueue(
 }
 
 export async function approveCampaignMedia(mediaId: string): Promise<void> {
-  const response = await fetch(`${API_BASE}/${mediaId}/approve`, {
+  const response = await fetch(`${API_BASE}/approve`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+  replacementMediaId: mediaId,
+}),
+
   });
 
   if (!response.ok) {
@@ -96,17 +100,20 @@ export async function approveCampaignMedia(mediaId: string): Promise<void> {
 
 export async function rejectCampaignMedia(
   mediaId: string,
-  reason: string,
+  reason: string
 ): Promise<void> {
-  const response = await fetch(`${API_BASE}/${mediaId}/reject`, {
-    method: 'POST',
+  const response = await fetch(`${API_BASE}/reject`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ reason }),
+    body: JSON.stringify({
+      replacementMediaId: mediaId,
+      rejectionReason: reason,
+    }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to reject campaign media.');
+    throw new Error("Failed to reject campaign media.");
   }
 }

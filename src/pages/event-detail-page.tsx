@@ -664,8 +664,7 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
                   maxWidth: 760,
                 }}
               >
-                View the official full-page flyer for this event. This space can
-                support a dedicated vertical flyer asset when provided.
+                View the official full-page flyer for this event. 
               </p>
             </div>
 
