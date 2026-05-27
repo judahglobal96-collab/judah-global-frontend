@@ -133,11 +133,11 @@ function App() {
           <Route path="/submit-event" element={<SubmitEventPage />} />
           <Route path="/submit-event/basics" element={<SubmitEventBasicsPage />} />
           <Route path="submit-event/:eventId/schedule" element={<SubmitEventSchedulePage />} /> 
-          <Route path="/submit-event/location" element={<SubmitEventLocationPage />} />
-          <Route path="/submit-event/sponsor" element={<SubmitEventSponsorPage />} />
-          <Route path="/submit-event/monetization" element={<SubmitEventMonetizationPage />} />
-          <Route path="/submit-event/review" element={<SubmitEventReviewPage />} />
-          <Route path="/submit-event/verify-email" element={<SubmitEventVerifyEmailPage />} />
+          <Route path="/submit-event/:eventId/location" element={<SubmitEventLocationPage />} />
+          <Route path="/submit-event/:eventId/sponsor" element={<SubmitEventSponsorPage />} />
+          <Route path="/submit-event/:eventId/monetization" element={<SubmitEventMonetizationPage />} />
+          <Route path="/submit-event/:eventId/review" element={<SubmitEventReviewPage />} />
+          <Route path="/submit-event/:eventId/verify-email" element={<SubmitEventVerifyEmailPage />} />
           <Route path="/submit-event/success" element={<SubmitEventSuccessPage />} />
 
           {/* Campaign Builder */}
