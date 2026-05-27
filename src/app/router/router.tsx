@@ -118,7 +118,7 @@ const router = createBrowserRouter([
       { path: "event/:eventId", element: <EventDetailPage /> },
       { path: "submit-event", element: <SubmitEventPage /> },
       { path: "submit-event/basics", element: <SubmitEventBasicsPage /> },
-      { path: "submit-event/:eventId/schedule", element: <SubmitEventSchedulePage /> },
+      { path: "submit-event/:eventId/schedule", element: <SubmitEventSchedulePage /> }, 
       { path: "submit-event/:eventId/location", element: <SubmitEventLocationPage /> },
       { path: "submit-event/:eventId/sponsor", element: <SubmitEventSponsorPage /> },
       { path: "submit-event/:eventId/monetization", element: <SubmitEventMonetizationPage /> },
