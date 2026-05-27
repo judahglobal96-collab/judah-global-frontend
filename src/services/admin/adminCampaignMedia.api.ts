@@ -87,33 +87,29 @@ export async function approveCampaignMedia(mediaId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/approve`, {
     method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
-  replacementMediaId: mediaId,
-}),
-
+      replacementMediaId: mediaId,
+    }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to approve campaign media.');
+    throw new Error("Failed to approve campaign media.");
   }
 }
+export async function rejectCampaignMedia(
+  mediaId: string,
+  reason: string,
+): Promise<void> {
   const token = localStorage.getItem("auth_token");
 
-export async function rejectCampaignMedia(
-  
-  mediaId: string,
-  reason: string
-): Promise<void> {
   const response = await fetch(`${API_BASE}/reject`, {
-    
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({
       replacementMediaId: mediaId,
