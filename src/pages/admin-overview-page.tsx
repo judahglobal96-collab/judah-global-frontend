@@ -16,6 +16,24 @@ type AdminEvent = {
 
 const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
+function getAuthToken() {
+  return (
+    localStorage.getItem("auth_token") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("accessToken") ||
+    ""
+  );
+}
+
+function normalizeEvents(data: any): AdminEvent[] {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.events)) return data.events;
+  if (Array.isArray(data?.pendingEvents)) return data.pendingEvents;
+  if (Array.isArray(data?.rejectedEvents)) return data.rejectedEvents;
+  return [];
+}
+
 export default function AdminOverviewPage() {
   const navigate = useNavigate();
 
@@ -32,30 +50,52 @@ export default function AdminOverviewPage() {
       setPendingError("");
       setRejectedError("");
 
+      const token = getAuthToken();
+
+      if (!token) {
+        throw new Error("Admin token missing. Please log in again.");
+      }
+
+      const authHeaders = {
+        Authorization: `Bearer ${token}`,
+      };
+
       const [pendingRes, rejectedRes] = await Promise.all([
-        fetch(`${API_BASE}/admin/events/pending`),
-        fetch(`${API_BASE}/admin/events/rejected`),
+        fetch(`${API_BASE}/admin/events/pending`, {
+          headers: authHeaders,
+        }),
+        fetch(`${API_BASE}/admin/events/rejected`, {
+          headers: authHeaders,
+        }),
       ]);
 
-      const pendingData = await pendingRes.json();
-      const rejectedData = await rejectedRes.json();
+      const pendingData = await pendingRes.json().catch(() => null);
+      const rejectedData = await rejectedRes.json().catch(() => null);
 
       if (!pendingRes.ok) {
-        throw new Error(
-          pendingData?.error || `Pending request failed with status ${pendingRes.status}`
+        setPendingError(
+          pendingData?.message ||
+            pendingData?.error ||
+            `Pending request failed with status ${pendingRes.status}`
         );
+        setPendingEvents([]);
+      } else {
+        setPendingEvents(normalizeEvents(pendingData));
       }
 
       if (!rejectedRes.ok) {
-        throw new Error(
-          rejectedData?.error || `Rejected request failed with status ${rejectedRes.status}`
+        setRejectedError(
+          rejectedData?.message ||
+            rejectedData?.error ||
+            `Rejected request failed with status ${rejectedRes.status}`
         );
+        setRejectedEvents([]);
+      } else {
+        setRejectedEvents(normalizeEvents(rejectedData));
       }
-
-      setPendingEvents(Array.isArray(pendingData) ? pendingData : []);
-      setRejectedEvents(Array.isArray(rejectedData) ? rejectedData : []);
     } catch (err) {
       console.error("Failed to load admin dashboard data:", err);
+
       const message =
         err instanceof Error ? err.message : "Failed to load admin dashboard data.";
 
@@ -125,13 +165,7 @@ export default function AdminOverviewPage() {
           flexWrap: "wrap",
         }}
       >
-        <span
-          style={{
-            fontWeight: 800,
-            color: "#111827",
-            whiteSpace: "nowrap",
-          }}
-        >
+        <span style={{ fontWeight: 800, color: "#111827", whiteSpace: "nowrap" }}>
           Event / Sponsor Lookup:
         </span>
 
@@ -208,14 +242,7 @@ export default function AdminOverviewPage() {
         </div>
       </section>
 
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr",
-          gap: "20px",
-          marginBottom: "28px",
-        }}
-      >
+      <section style={{ display: "grid", gap: "20px", marginBottom: "28px" }}>
         <section style={sectionStyle}>
           <div
             style={{
@@ -282,7 +309,7 @@ export default function AdminOverviewPage() {
             }}
           >
             <h2 style={{ margin: 0 }}>Rejected Events</h2>
-            <Link to="/admin/rejected-events">View Rejected Events</Link> 
+            <Link to="/admin/rejected-events">View Rejected Events</Link>
           </div>
 
           {rejectedError ? <p>{rejectedError}</p> : null}

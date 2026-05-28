@@ -19,6 +19,23 @@ type RejectedEvent = {
 
 const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1`;
 
+function getAuthToken() {
+  return (
+    localStorage.getItem("auth_token") ||
+    localStorage.getItem("token") ||
+    localStorage.getItem("authToken") ||
+    localStorage.getItem("accessToken") ||
+    ""
+  );
+}
+
+function normalizeRejectedEvents(data: any): RejectedEvent[] {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.events)) return data.events;
+  if (Array.isArray(data?.rejectedEvents)) return data.rejectedEvents;
+  return [];
+}
+
 export default function AdminRejectedEventsPage() {
   const [events, setEvents] = useState<RejectedEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,30 +46,29 @@ export default function AdminRejectedEventsPage() {
       setLoading(true);
       setError("");
 
-            const token =
-        localStorage.getItem('auth_token') ||
-        localStorage.getItem('token') ||
-        localStorage.getItem('authToken') ||
-        localStorage.getItem('accessToken');
+      const token = getAuthToken();
 
-        console.log("ADMIN PENDING TOKEN:", token);
-        
-      const res = await fetch(`${API_BASE}/admin/events/rejected`, {
-        credentials: 'include',
-        headers: token
-          ? {
-              Authorization: `Bearer ${token}`,
-            }
-          : {},
-      });
-      
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.error || `Request failed with status ${res.status}`);
+      if (!token) {
+        throw new Error("Admin token missing. Please log in again.");
       }
 
-      setEvents(Array.isArray(data) ? data : []);
+      const res = await fetch(`${API_BASE}/admin/events/rejected`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        throw new Error(
+          data?.message ||
+            data?.error ||
+            `Request failed with status ${res.status}`
+        );
+      }
+
+      setEvents(normalizeRejectedEvents(data));
     } catch (err) {
       console.error("Failed to load rejected events:", err);
       setError(err instanceof Error ? err.message : "Failed to load rejected events.");
@@ -117,7 +133,7 @@ export default function AdminRejectedEventsPage() {
 
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
           <Link to="/admin/overview">Back to Dashboard</Link>
-          <Link to="/admin/events/pending">Open Pending Queue</Link>
+          <Link to="/admin/pending-events">Open Pending Queue</Link>
         </div>
       </div>
 
@@ -133,6 +149,7 @@ export default function AdminRejectedEventsPage() {
           }}
         >
           <h2 style={{ margin: 0 }}>Rejected Event Queue</h2>
+
           <button
             type="button"
             onClick={loadRejectedEvents}
@@ -183,7 +200,9 @@ export default function AdminRejectedEventsPage() {
                   }}
                 >
                   <div>
-                    <h3 style={{ marginTop: 0, marginBottom: "8px" }}>{event.title}</h3>
+                    <h3 style={{ marginTop: 0, marginBottom: "8px" }}>
+                      {event.title}
+                    </h3>
                     <div style={badgeStyle}>{event.status || "rejected"}</div>
                   </div>
 
@@ -211,7 +230,8 @@ export default function AdminRejectedEventsPage() {
                     <strong>Type:</strong> {event.event_type || "—"}
                   </div>
                   <div>
-                    <strong>Submitter Email:</strong> {event.submitter_email || "—"}
+                    <strong>Submitter Email:</strong>{" "}
+                    {event.submitter_email || "—"}
                   </div>
                   <div>
                     <strong>Payment Status:</strong> {event.payment_status || "—"}
@@ -238,7 +258,8 @@ export default function AdminRejectedEventsPage() {
                 >
                   <strong>Rejection Reason:</strong>
                   <div style={{ marginTop: "6px" }}>
-                    {event.rejection_reason?.trim() || "No rejection reason recorded."}
+                    {event.rejection_reason?.trim() ||
+                      "No rejection reason recorded."}
                   </div>
                 </div>
               </article>
