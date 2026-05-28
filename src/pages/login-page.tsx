@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginPlatformUser } from "../services/auth.api";
+import { loginPlatformUser, storeAuthToken } from "../services/auth.api";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -47,20 +47,35 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
     setLoading(true);
     setError("");
 
     try {
-      const res = await loginPlatformUser({ email, password });
+      const res = await loginPlatformUser({
+        email,
+        password,
+      });
 
-    if (res?.requiresOtp) {
-      sessionStorage.setItem("auth_email", email);
-      sessionStorage.setItem("auth_redirect", redirect);
-      navigate(`/verify-otp?redirect=${encodeURIComponent(redirect)}`);
-      return;
-    }
+      if (res?.requiresOtp) {
+        sessionStorage.setItem("auth_email", email);
+        sessionStorage.setItem("auth_redirect", redirect);
+
+        navigate(`/verify-otp?redirect=${encodeURIComponent(redirect)}`);
+        return;
+      }
+
+      const token = res?.token || res?.accessToken;
+
+      if (token) {
+        storeAuthToken(token);
+        navigate(redirect);
+        return;
+      }
+
       setError(res?.message || "Login failed.");
-    } catch {
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Login error.");
     } finally {
       setLoading(false);
@@ -179,8 +194,8 @@ export default function LoginPage() {
           }}
         >
           Create an account
-        </a>      
-        </div>
+        </a>
+      </div>
     </div>
   );
 }
