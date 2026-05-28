@@ -8,14 +8,56 @@ import {
 
 type FilterStatus = 'pending' | 'approved' | 'rejected' | 'all';
 
+type FlexibleCampaignMediaItem = CampaignMediaItem & {
+  media_url?: string | null;
+  image_url?: string | null;
+  file_url?: string | null;
+  asset_url?: string | null;
+  public_url?: string | null;
+  campaign_media_url?: string | null;
+  storage_url?: string | null;
+  url?: string | null;
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+const DEFAULT_FALLBACK_IMAGE = '/images/judah-default-fallback.png';
+
 function formatDate(value?: string | null): string {
   if (!value) return '—';
-
   const date = new Date(value);
-
   if (Number.isNaN(date.getTime())) return '—';
-
   return date.toLocaleString();
+}
+
+function toAbsoluteMediaUrl(url?: string | null): string {
+  if (!url) return '';
+
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  const normalized = url.startsWith('/') ? url : `/${url}`;
+  return `${API_BASE_URL}${normalized}`;
+}
+
+function getCampaignMediaUrl(item?: FlexibleCampaignMediaItem | null): string {
+  if (!item) return '';
+
+  return toAbsoluteMediaUrl(
+    item.media_url ||
+      item.campaign_media_url ||
+      item.image_url ||
+      item.file_url ||
+      item.asset_url ||
+      item.public_url ||
+      item.storage_url ||
+      item.url ||
+      ''
+  );
+}
+
+function getSafeMediaType(item?: FlexibleCampaignMediaItem | null): string {
+  return item?.media_type || 'image';
 }
 
 function StatusBadge({ status }: { status?: string | null }) {
@@ -25,8 +67,8 @@ function StatusBadge({ status }: { status?: string | null }) {
     safeStatus === 'approved'
       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
       : safeStatus === 'rejected'
-        ? 'bg-red-50 text-red-700 border-red-200'
-        : 'bg-amber-50 text-amber-700 border-amber-200';
+      ? 'bg-red-50 text-red-700 border-red-200'
+      : 'bg-amber-50 text-amber-700 border-amber-200';
 
   return (
     <span
@@ -34,6 +76,34 @@ function StatusBadge({ status }: { status?: string | null }) {
     >
       {safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1)}
     </span>
+  );
+}
+
+function MediaPreview({
+  item,
+  className,
+  alt,
+}: {
+  item: FlexibleCampaignMediaItem;
+  className: string;
+  alt: string;
+}) {
+  const mediaUrl = getCampaignMediaUrl(item);
+  const mediaType = getSafeMediaType(item);
+
+  if (mediaType === 'video' && mediaUrl) {
+    return <video src={mediaUrl} controls className={className} />;
+  }
+
+  return (
+    <img
+      src={mediaUrl || DEFAULT_FALLBACK_IMAGE}
+      alt={alt}
+      className={className}
+      onError={(e) => {
+        e.currentTarget.src = DEFAULT_FALLBACK_IMAGE;
+      }}
+    />
   );
 }
 
@@ -72,9 +142,7 @@ function RejectModal({
   const [reason, setReason] = useState('');
 
   useEffect(() => {
-    if (!isOpen) {
-      setReason('');
-    }
+    if (!isOpen) setReason('');
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -83,7 +151,6 @@ function RejectModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
         <h2 className="text-xl font-semibold text-slate-900">Reject media</h2>
-
         <p className="mt-2 text-sm text-slate-600">
           Add a short reason so the moderation decision is documented clearly.
         </p>
@@ -121,8 +188,8 @@ function RejectModal({
 }
 
 export default function AdminMediaReviewPage() {
-  const [items, setItems] = useState<CampaignMediaItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<CampaignMediaItem | null>(null);
+  const [items, setItems] = useState<FlexibleCampaignMediaItem[]>([]);
+  const [selectedItem, setSelectedItem] = useState<FlexibleCampaignMediaItem | null>(null);
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('pending');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -136,10 +203,12 @@ export default function AdminMediaReviewPage() {
       setLoading(true);
       setErrorMessage('');
 
-      const queue = await fetchCampaignMediaQueue({
+      const queue = (await fetchCampaignMediaQueue({
         status: statusFilter,
         search,
-      });
+      })) as FlexibleCampaignMediaItem[];
+
+      console.log('ADMIN MEDIA REVIEW QUEUE:', queue);
 
       setItems(queue);
 
@@ -148,7 +217,6 @@ export default function AdminMediaReviewPage() {
         if (!current) return queue[0];
 
         const updatedCurrent = queue.find((item) => item.id === current.id);
-
         return updatedCurrent ?? queue[0];
       });
     } catch (error) {
@@ -173,7 +241,7 @@ export default function AdminMediaReviewPage() {
     await loadQueue();
   }
 
-  async function handleApprove(item: CampaignMediaItem) {
+  async function handleApprove(item: FlexibleCampaignMediaItem) {
     try {
       setIsSubmittingAction(true);
       setActionMessage('');
@@ -219,7 +287,6 @@ export default function AdminMediaReviewPage() {
               <h1 className="text-3xl font-semibold tracking-tight text-slate-950">
                 Admin Media Review
               </h1>
-
               <p className="mt-2 text-sm text-slate-600">
                 Review uploaded campaign media before paid promotional placements appear live.
               </p>
@@ -283,6 +350,7 @@ export default function AdminMediaReviewPage() {
             <div className="space-y-4">
               {items.map((item) => {
                 const isActive = selectedItem?.id === item.id;
+                const mediaUrl = getCampaignMediaUrl(item);
 
                 return (
                   <button
@@ -297,19 +365,11 @@ export default function AdminMediaReviewPage() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-[240px_1fr]">
                       <div className="h-56 bg-slate-100 md:h-full">
-                        {item.media_type === 'video' ? (
-                          <video
-                            src={item.media_url}
-                            controls
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <img
-                            src={item.media_url}
-                            alt={item.campaign_title || 'Campaign media pending review'}
-                            className="h-full w-full object-cover"
-                          />
-                        )}
+                        <MediaPreview
+                          item={item}
+                          alt={item.campaign_title || 'Campaign media pending review'}
+                          className="h-full w-full object-cover"
+                        />
                       </div>
 
                       <div className="p-5">
@@ -318,7 +378,6 @@ export default function AdminMediaReviewPage() {
                             <h2 className="text-lg font-semibold text-slate-950">
                               {item.campaign_title || 'Campaign media'}
                             </h2>
-
                             <p className="mt-1 text-sm text-slate-600">
                               {item.sponsor_name || 'No sponsor name'}
                             </p>
@@ -332,21 +391,23 @@ export default function AdminMediaReviewPage() {
                             <span className="font-medium text-slate-800">Placement:</span>{' '}
                             {item.placement_type || '—'}
                           </div>
-
                           <div>
                             <span className="font-medium text-slate-800">Media Type:</span>{' '}
                             {item.media_type || 'image'}
                           </div>
-
                           <div>
                             <span className="font-medium text-slate-800">Submitted:</span>{' '}
                             {formatDate(item.submitted_at)}
                           </div>
-
                           <div>
                             <span className="font-medium text-slate-800">Reviewed:</span>{' '}
                             {formatDate(item.reviewed_at)}
                           </div>
+                        </div>
+
+                        <div className="mt-4 break-all rounded-2xl bg-slate-50 p-3 text-xs text-slate-500">
+                          <span className="font-semibold text-slate-700">Resolved media URL:</span>{' '}
+                          {mediaUrl || 'No media URL returned by API'}
                         </div>
 
                         {item.rejection_reason ? (
@@ -366,19 +427,11 @@ export default function AdminMediaReviewPage() {
               {selectedItem ? (
                 <>
                   <div className="overflow-hidden rounded-2xl bg-slate-100">
-                    {selectedItem.media_type === 'video' ? (
-                      <video
-                        src={selectedItem.media_url}
-                        controls
-                        className="h-[360px] w-full object-cover"
-                      />
-                    ) : (
-                      <img
-                        src={selectedItem.media_url}
-                        alt={selectedItem.campaign_title || 'Selected campaign media'}
-                        className="h-[360px] w-full object-cover"
-                      />
-                    )}
+                    <MediaPreview
+                      item={selectedItem}
+                      alt={selectedItem.campaign_title || 'Selected campaign media'}
+                      className="h-[360px] w-full object-cover"
+                    />
                   </div>
 
                   <div className="mt-5 flex items-start justify-between gap-4">
@@ -386,7 +439,6 @@ export default function AdminMediaReviewPage() {
                       <h2 className="text-2xl font-semibold text-slate-950">
                         {selectedItem.campaign_title || 'Campaign media'}
                       </h2>
-
                       <p className="mt-1 text-sm text-slate-600">
                         {selectedItem.placement_type || 'Campaign placement'}
                       </p>
@@ -400,30 +452,29 @@ export default function AdminMediaReviewPage() {
                       <span className="font-semibold text-slate-900">Sponsor:</span>{' '}
                       {selectedItem.sponsor_name || '—'}
                     </div>
-
                     <div>
                       <span className="font-semibold text-slate-900">Campaign ID:</span>{' '}
                       {selectedItem.campaign_id || '—'}
                     </div>
-
                     <div>
                       <span className="font-semibold text-slate-900">Placement:</span>{' '}
                       {selectedItem.placement_type || '—'}
                     </div>
-
                     <div>
                       <span className="font-semibold text-slate-900">Media Type:</span>{' '}
                       {selectedItem.media_type || 'image'}
                     </div>
-
                     <div>
                       <span className="font-semibold text-slate-900">Submitted:</span>{' '}
                       {formatDate(selectedItem.submitted_at)}
                     </div>
-
                     <div>
                       <span className="font-semibold text-slate-900">Reviewed:</span>{' '}
                       {formatDate(selectedItem.reviewed_at)}
+                    </div>
+                    <div className="break-all">
+                      <span className="font-semibold text-slate-900">Resolved Media URL:</span>{' '}
+                      {getCampaignMediaUrl(selectedItem) || 'No media URL returned by API'}
                     </div>
                   </div>
 
