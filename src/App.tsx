@@ -128,7 +128,7 @@ function App() {
             <Route path="/admin/rejected-events" element={<AdminRejectedEventsPage />} />
             <Route path="/admin/org-accounts" element={<AdminOrgAccountsPage />} />
             <Route path="/admin/org-accounts/new" element={<AdminOrgAccountCreatePage />} />
-            <Route path="/admin/events/paid-promos" element={<PaidPromosPage />} />
+            <Route path="/admin/events/:eventId/paid-promos" element={<PaidPromosPage />} />
             <Route path="/admin/event-logs" element={<AdminEventLogsPage />}  />
             <Route path="/admin/event/:eventId/logs" element={<AdminEventLogsPage />}  />
             <Route path="/admin/support-lookup" element={<SupportLookupPage />} />
