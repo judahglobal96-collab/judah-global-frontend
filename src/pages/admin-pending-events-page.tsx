@@ -28,6 +28,8 @@ export default function AdminPendingEventsPage() {
         localStorage.getItem('authToken') ||
         localStorage.getItem('accessToken');
 
+        console.log("ADMIN PENDING TOKEN:", token);
+        
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/events/pending`,
         {

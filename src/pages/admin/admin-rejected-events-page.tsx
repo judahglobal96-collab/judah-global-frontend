@@ -35,6 +35,8 @@ export default function AdminRejectedEventsPage() {
         localStorage.getItem('authToken') ||
         localStorage.getItem('accessToken');
 
+        console.log("ADMIN PENDING TOKEN:", token);
+        
       const res = await fetch(`${API_BASE}/admin/events/rejected`, {
         credentials: 'include',
         headers: token
