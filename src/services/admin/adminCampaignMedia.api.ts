@@ -82,7 +82,11 @@ export async function fetchCampaignMediaQueue(
 }
 
 export async function approveCampaignMedia(mediaId: string): Promise<void> {
-  const token = localStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/approve`, {
     method: "POST",
@@ -103,7 +107,11 @@ export async function rejectCampaignMedia(
   mediaId: string,
   reason: string,
 ): Promise<void> {
-  const token = localStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("authToken") ||
+      localStorage.getItem("accessToken");
 
   const response = await fetch(`${API_BASE}/reject`, {
     method: "POST",
