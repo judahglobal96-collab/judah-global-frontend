@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+type EventMediaItem = {
+  media_url?: string;
+  image_url?: string;
+  file_url?: string;
+  url?: string;
+  media_type?: string;
+  status?: string;
+  is_primary?: boolean;
+};
+
 type EventDetail = {
   event_id?: string;
   event_code?: string;
@@ -22,18 +32,25 @@ type EventDetail = {
   status?: string;
   is_featured?: boolean;
   is_virtual?: boolean;
+
   hero_image_url?: string;
+  campaign_media_url?: string;
   image_url?: string;
   media_url?: string;
   official_flyer_url?: string;
+
+  campaign_media?: EventMediaItem | EventMediaItem[];
+  event_media?: EventMediaItem | EventMediaItem[];
+
   sponsor_logo_url?: string;
   logo_url?: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const getEventUrl = (eventId: string) =>
   `${API_BASE_URL}/api/v1/events/${eventId}`;
+
 const DEFAULT_FALLBACK_IMAGE = "/images/judah-default-fallback.png";
 const FEATURED_FALLBACK_IMAGE = "/images/judah-featured-fallback.png";
 
@@ -81,6 +98,57 @@ function buildCommaLine(parts: Array<string | undefined>) {
     .join(", ");
 }
 
+function getMediaUrlFromItem(item?: EventMediaItem) {
+  if (!item) return "";
+
+  return (
+    item.media_url ||
+    item.image_url ||
+    item.file_url ||
+    item.url ||
+    ""
+  );
+}
+
+function normalizeMediaItems(
+  media?: EventMediaItem | EventMediaItem[]
+): EventMediaItem[] {
+  if (!media) return [];
+  return Array.isArray(media) ? media : [media];
+}
+
+function findApprovedMediaUrl(media?: EventMediaItem | EventMediaItem[]) {
+  const items = normalizeMediaItems(media);
+
+  const approvedPrimary = items.find(
+    (item) =>
+      item.status === "approved" &&
+      item.is_primary &&
+      getMediaUrlFromItem(item)
+  );
+
+  if (approvedPrimary) return getMediaUrlFromItem(approvedPrimary);
+
+  const approvedImage = items.find(
+    (item) =>
+      item.status === "approved" &&
+      (!item.media_type || item.media_type.includes("image")) &&
+      getMediaUrlFromItem(item)
+  );
+
+  if (approvedImage) return getMediaUrlFromItem(approvedImage);
+
+  const anyApproved = items.find(
+    (item) => item.status === "approved" && getMediaUrlFromItem(item)
+  );
+
+  if (anyApproved) return getMediaUrlFromItem(anyApproved);
+
+  const anyMedia = items.find((item) => getMediaUrlFromItem(item));
+
+  return anyMedia ? getMediaUrlFromItem(anyMedia) : "";
+}
+
 function DetailInfoCard({
   label,
   children,
@@ -97,9 +165,7 @@ function DetailInfoCard({
         background: "#ffffff",
       }}
     >
-      <strong
-        style={{ display: "block", marginBottom: 8, color: "#0f172a" }}
-      >
+      <strong style={{ display: "block", marginBottom: 8, color: "#0f172a" }}>
         {label}
       </strong>
       {children}
@@ -110,17 +176,10 @@ function DetailInfoCard({
 export default function EventDetailPage() {
   const { eventId } = useParams();
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-
-console.log("EVENT DETAIL PAGE MOUNTED");
-
-console.log("EVENT DETAIL PAGE MOUNTED");
-console.log("EVENT ID:", eventId);
-console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
-
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState("");
   const [modalImageAlt, setModalImageAlt] = useState("");
@@ -137,14 +196,19 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
         setLoading(true);
         setError("");
 
-      const res = await fetch(getEventUrl(eventId));        
-      const data = await res.json();
+        const res = await fetch(getEventUrl(eventId));
+        const data = await res.json();
 
         if (!res.ok) {
           throw new Error(data.error || "Failed to load event");
         }
 
         console.log("EVENT DETAIL RESPONSE:", data);
+        console.log("campaign_media:", data.campaign_media);
+        console.log("event_media:", data.event_media);
+        console.log("campaign_media_url:", data.campaign_media_url);
+        console.log("official_flyer_url:", data.official_flyer_url);
+
         setEvent(data);
       } catch (err) {
         const message =
@@ -176,31 +240,45 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
     };
   }, [isImageModalOpen]);
 
+  const fallbackImage = useMemo(() => {
+    return event?.is_featured ? FEATURED_FALLBACK_IMAGE : DEFAULT_FALLBACK_IMAGE;
+  }, [event]);
+
+  const campaignMediaImage = useMemo(() => {
+    if (!event) return "";
+
+    return toAbsoluteMediaUrl(
+      event.campaign_media_url ||
+        findApprovedMediaUrl(event.campaign_media) ||
+        findApprovedMediaUrl(event.event_media)
+    );
+  }, [event]);
+
+  const officialFlyerImage = useMemo(() => {
+    if (!event) return "";
+
+    return toAbsoluteMediaUrl(
+      event.official_flyer_url ||
+        findApprovedMediaUrl(event.event_media) ||
+        findApprovedMediaUrl(event.campaign_media)
+    );
+  }, [event]);
+
   const heroImage = useMemo(() => {
     if (!event) return "";
 
     return (
       toAbsoluteMediaUrl(event.hero_image_url) ||
+      campaignMediaImage ||
+      officialFlyerImage ||
       toAbsoluteMediaUrl(event.image_url) ||
       toAbsoluteMediaUrl(event.media_url)
     );
-  }, [event]);
-
-  const fallbackImage = useMemo(() => {
-    return event?.is_featured ? FEATURED_FALLBACK_IMAGE : DEFAULT_FALLBACK_IMAGE;
-  }, [event]);
+  }, [event, campaignMediaImage, officialFlyerImage]);
 
   const displayImage = heroImage || fallbackImage;
 
-  const officialFlyerImage = useMemo(() => {
-  const flyerUrl = event?.official_flyer_url || "";
-  const resolvedFlyerImage = flyerUrl ? toAbsoluteMediaUrl(flyerUrl) : "";
-
-  console.log("EVENT DETAIL official_flyer_url:", flyerUrl);
-  console.log("EVENT DETAIL resolvedFlyerImage:", resolvedFlyerImage);
-
-  return resolvedFlyerImage;
-}, [event]);
+  const shouldShowOfficialFlyer = Boolean(officialFlyerImage);
 
   const locationLine = useMemo(() => {
     if (!event) return "Location TBD";
@@ -246,7 +324,6 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
         >
           ← Back
         </Link>
-
         <p style={{ marginTop: 16, color: "#475569" }}>Loading event...</p>
       </main>
     );
@@ -265,7 +342,6 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
         >
           ← Back
         </Link>
-
         <h1 style={{ marginTop: 16, color: "#0f172a" }}>Event not found</h1>
         <p style={{ color: "#475569" }}>
           {error || "This event is unavailable."}
@@ -377,29 +453,28 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
                   )}
                 </div>
 
-                  {event.event_code && (
-                    <div
-                      style={{
-                        marginBottom: 16,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 8,
-                        padding: "8px 14px",
-                        borderRadius: 999,
-                        background: "#f8fafc",
-                        border: "1px solid #e5e7eb",
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: "#111827",
-                      }}
-                    >
-                      <span style={{ color: "#667085", fontWeight: 600 }}>
-                        Event Code
-                      </span>
-
-                      <span>{event.event_code}</span>
-                    </div>
-                  )}
+                {event.event_code && (
+                  <div
+                    style={{
+                      marginBottom: 16,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 14px",
+                      borderRadius: 999,
+                      background: "#f8fafc",
+                      border: "1px solid #e5e7eb",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#111827",
+                    }}
+                  >
+                    <span style={{ color: "#667085", fontWeight: 600 }}>
+                      Event Code
+                    </span>
+                    <span>{event.event_code}</span>
+                  </div>
+                )}
 
                 <h1
                   className="event-title"
@@ -441,12 +516,10 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
                     <strong style={{ color: "#0f172a" }}>Starts:</strong>{" "}
                     {formatDate(event.starts_at_utc)}
                   </p>
-
                   <p style={{ margin: 0 }}>
                     <strong style={{ color: "#0f172a" }}>Ends:</strong>{" "}
                     {formatDate(event.ends_at_utc)}
                   </p>
-
                   <p style={{ margin: 0 }}>
                     <strong style={{ color: "#0f172a" }}>Timezone:</strong>{" "}
                     {event.timezone || "N/A"}
@@ -479,10 +552,7 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
                 <button
                   type="button"
                   onClick={() =>
-                    openImageModal(
-                      displayImage,
-                      event.title || "Expanded event image"
-                    )
+                    openImageModal(displayImage, event.title || "Expanded event image")
                   }
                   className="event-image-frame"
                   aria-label="Expand event image"
@@ -617,144 +687,137 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
             </DetailInfoCard>
           </div>
 
-          <section
-            style={{
-              marginTop: 24,
-              border: "1px solid #e5e7eb",
-              borderRadius: 24,
-              background: "#ffffff",
-              boxShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
-              padding: 24,
-            }}
-          >
-            <div
+          {shouldShowOfficialFlyer && (
+            <section
               style={{
-                marginBottom: 18,
+                marginTop: 24,
+                border: "1px solid #e5e7eb",
+                borderRadius: 24,
+                background: "#ffffff",
+                boxShadow: "0 12px 28px rgba(15, 23, 42, 0.06)",
+                padding: 24,
               }}
             >
-              <div
-                style={{
-                  fontSize: 12,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.08em",
-                  color: "#667085",
-                  marginBottom: 8,
-                  fontWeight: 700,
-                }}
-              >
-                Official Event Flyer
+              <div style={{ marginBottom: 18 }}>
+                <div
+                  style={{
+                    fontSize: 12,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    color: "#667085",
+                    marginBottom: 8,
+                    fontWeight: 700,
+                  }}
+                >
+                  Official Event Flyer
+                </div>
+
+                <h3
+                  style={{
+                    margin: 0,
+                    color: "#0f172a",
+                    fontSize: "1.4rem",
+                  }}
+                >
+                  Full promotional flyer
+                </h3>
+
+                <p
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 0,
+                    color: "#475569",
+                    lineHeight: 1.7,
+                    maxWidth: 760,
+                  }}
+                >
+                  View the official full-page flyer for this event.
+                </p>
               </div>
 
-              <h3
-                style={{
-                  margin: 0,
-                  color: "#0f172a",
-                  fontSize: "1.4rem",
-                }}
-              >
-                Full promotional flyer
-              </h3>
-
-              <p
-                style={{
-                  marginTop: 10,
-                  marginBottom: 0,
-                  color: "#475569",
-                  lineHeight: 1.7,
-                  maxWidth: 760,
-                }}
-              >
-                View the official full-page flyer for this event. 
-              </p>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <button
-                type="button"
-                onClick={() =>
-                  openImageModal(
-                    officialFlyerImage,
-                    `${event.title || "Event"} official flyer`
-                  )
-                }
-                style={{
-                  width: "min(100%, 420px)",
-                  border: "1px solid #e5e7eb",
-                  borderRadius: 22,
-                  background: "#f8fafc",
-                  padding: 16,
-                  cursor: "zoom-in",
-                  textAlign: "left",
-                  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.05)",
-                }}
-              >
-                <div
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    openImageModal(
+                      officialFlyerImage,
+                      `${event.title || "Event"} official flyer`
+                    )
+                  }
                   style={{
-                    width: "100%",
-                    aspectRatio: "3 / 4",
-                    borderRadius: 16,
-                    overflow: "hidden",
-                    background: "#ffffff",
-                    border: "1px solid #e2e8f0",
-                    marginBottom: 14,
+                    width: "min(100%, 420px)",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 22,
+                    background: "#f8fafc",
+                    padding: 16,
+                    cursor: "zoom-in",
+                    textAlign: "left",
+                    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.05)",
                   }}
                 >
-                  <img
-                    src={officialFlyerImage}
-                    alt={`${event.title || "Event"} official flyer`}
-                    onError={(e) => {
-                      e.currentTarget.src = fallbackImage;
-                    }}
+                  <div
                     style={{
                       width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    gap: 12,
-                  }}
-                >
-                  <span
-                    style={{
-                      color: "#334155",
-                      fontSize: 14,
-                      lineHeight: 1.6,
+                      aspectRatio: "3 / 4",
+                      borderRadius: 16,
+                      overflow: "hidden",
+                      background: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      marginBottom: 14,
                     }}
                   >
-                    Open the full flyer
-                  </span>
+                    <img
+                      src={officialFlyerImage}
+                      alt={`${event.title || "Event"} official flyer`}
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImage;
+                      }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        display: "block",
+                      }}
+                    />
+                  </div>
 
-                  <span
+                  <div
                     style={{
-                      display: "inline-flex",
-                      whiteSpace: "nowrap",
-                      fontSize: 12,
-                      fontWeight: 700,
-                      padding: "8px 12px",
-                      borderRadius: 999,
-                      background: "#0f172a",
-                      color: "#ffffff",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: 12,
                     }}
                   >
-                    Open Flyer
-                  </span>
-                </div>
-              </button>
-            </div>
-          </section>
+                    <span
+                      style={{
+                        color: "#334155",
+                        fontSize: 14,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      Open the full flyer
+                    </span>
+
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        whiteSpace: "nowrap",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        padding: "8px 12px",
+                        borderRadius: 999,
+                        background: "#0f172a",
+                        color: "#ffffff",
+                      }}
+                    >
+                      Open Flyer
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </section>
+          )}
         </div>
       </main>
 
@@ -777,17 +840,18 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
         >
           <div
             onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "relative",
-                width: "min(96vw, 900px)",
-                maxHeight: "92vh",
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 12,
-                padding: "8px 4px 16px",
-              }}          >
+            style={{
+              position: "relative",
+              width: "min(96vw, 900px)",
+              maxHeight: "92vh",
+              overflow: "auto",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+              padding: "8px 4px 16px",
+            }}
+          >
             <button
               type="button"
               onClick={() => setIsImageModalOpen(false)}
@@ -811,7 +875,7 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
             </button>
 
             <img
-              src={modalImageSrc || officialFlyerImage}
+              src={modalImageSrc || displayImage}
               alt={modalImageAlt || event.title || "Expanded event image"}
               onError={(e) => {
                 e.currentTarget.src = fallbackImage;
@@ -828,7 +892,8 @@ console.log("EVENT URL:", `${API_BASE_URL}/api/v1/events/${eventId}`);
                 background: "#ffffff",
                 boxShadow: "0 20px 60px rgba(0, 0, 0, 0.35)",
               }}
-              />
+            />
+
             <div
               style={{
                 color: "#e2e8f0",
