@@ -276,7 +276,11 @@ export default function EventDetailPage() {
     );
   }, [event, campaignMediaImage, officialFlyerImage]);
 
-  const displayImage = heroImage || fallbackImage;
+      const displayImage =
+        heroImage ||
+        campaignMediaImage ||
+        officialFlyerImage ||
+        fallbackImage;
 
   const shouldShowOfficialFlyer = Boolean(officialFlyerImage);
 
