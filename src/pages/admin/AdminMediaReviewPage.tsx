@@ -20,7 +20,7 @@ type FlexibleCampaignMediaItem = CampaignMediaItem & {
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-const DEFAULT_FALLBACK_IMAGE = '/images/judah-default-fallback.png';
+//*const DEFAULT_FALLBACK_IMAGE = '/images/judah-default-fallback.png';*//
 
 function formatDate(value?: string | null): string {
   if (!value) return '—';
@@ -91,30 +91,20 @@ function MediaPreview({
   const mediaUrl = getCampaignMediaUrl(item);
   const mediaType = getSafeMediaType(item);
 
-  if (mediaType === 'video' && mediaUrl) {
+  if (!mediaUrl) {
+    return null;
+  }
+
+  if (mediaType === 'video') {
     return <video src={mediaUrl} controls className={className} />;
   }
 
   return (
     <img
-      src={mediaUrl || DEFAULT_FALLBACK_IMAGE}
+      src={mediaUrl}
       alt={alt}
       className={className}
-      onError={(e) => {
-        e.currentTarget.src = DEFAULT_FALLBACK_IMAGE;
-      }}
     />
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">No media items found</h3>
-      <p className="mt-2 text-sm text-slate-600">
-        Try changing the filter or search term.
-      </p>
-    </div>
   );
 }
 
@@ -183,6 +173,19 @@ function RejectModal({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900">
+        No media items found
+      </h3>
+      <p className="mt-2 text-sm text-slate-600">
+        Try changing the filter or search term.
+      </p>
     </div>
   );
 }

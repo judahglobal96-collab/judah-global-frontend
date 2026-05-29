@@ -5,7 +5,7 @@ export type CampaignMediaStatus = 'pending' | 'approved' | 'rejected';
 export type CampaignMediaItem = {
   id: string;
   campaign_id?: string | null;
-  media_url: string;
+  media_url: string | null;
   media_type?: 'image' | 'video' | string | null;
   status?: CampaignMediaStatus | string | null;
   placement_type?: string | null;
@@ -20,9 +20,8 @@ export interface FetchCampaignMediaQueueParams {
   status?: CampaignMediaStatus | 'all';
   search?: string;
 }
-
-function buildMediaUrl(value?: string | null): string {
-  if (!value) return '/images/judah-default-fallback.png';
+function buildMediaUrl(value?: string | null): string | null {
+  if (!value) return null;
 
   if (value.startsWith('http://') || value.startsWith('https://')) {
     return value;
