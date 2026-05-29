@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { CampaignMediaItem } from '../../services/admin/adminCampaignMedia.api';
+import type { CampaignMediaItem } from '../../services/adminMediaReview.api';
 import {
   approveCampaignMedia,
   fetchCampaignMediaQueue,
   rejectCampaignMedia,
-} from '../../services/admin/adminCampaignMedia.api';
+} from '../../services/adminMediaReview.api';
 
 type FilterStatus = 'pending' | 'approved' | 'rejected' | 'all';
 
