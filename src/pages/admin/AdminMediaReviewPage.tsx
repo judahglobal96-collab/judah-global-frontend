@@ -211,8 +211,21 @@ export default function AdminMediaReviewPage() {
         search,
       })) as FlexibleCampaignMediaItem[];
 
-      console.log('ADMIN MEDIA REVIEW QUEUE:', queue);
-
+console.log('ADMIN MEDIA REVIEW RAW QUEUE:', queue);
+console.log(
+  'ADMIN MEDIA REVIEW MEDIA FIELDS:',
+  queue.map((item) => ({
+    id: item.id,
+    media_url: item.media_url,
+    campaign_media_url: item.campaign_media_url,
+    image_url: item.image_url,
+    file_url: item.file_url,
+    asset_url: item.asset_url,
+    public_url: item.public_url,
+    storage_url: item.storage_url,
+    url: item.url,
+  }))
+);
   const queueWithMedia = queue.filter((item) => Boolean(getCampaignMediaUrl(item)));
 
   setItems(queueWithMedia);
