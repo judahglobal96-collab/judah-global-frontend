@@ -213,14 +213,16 @@ export default function AdminMediaReviewPage() {
 
       console.log('ADMIN MEDIA REVIEW QUEUE:', queue);
 
-      setItems(queue);
+  const queueWithMedia = queue.filter((item) => Boolean(getCampaignMediaUrl(item)));
+
+  setItems(queueWithMedia);
 
       setSelectedItem((current) => {
-        if (!queue.length) return null;
-        if (!current) return queue[0];
+        if (!queueWithMedia.length) return null;
+        if (!current) return queueWithMedia[0];
 
-        const updatedCurrent = queue.find((item) => item.id === current.id);
-        return updatedCurrent ?? queue[0];
+        const updatedCurrent = queueWithMedia.find((item) => item.id === current.id);
+        return updatedCurrent ?? queueWithMedia[0];
       });
     } catch (error) {
       console.error(error);
