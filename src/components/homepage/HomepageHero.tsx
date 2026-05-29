@@ -8,16 +8,20 @@ type HeroPromoItem = {
   event_id?: string;
   event_code?: string;
   title?: string;
+  short_description?: string;
+  description?: string;
   starts_at_utc?: string;
   ends_at_utc?: string;
   city?: string | null;
   state_region?: string | null;
   country?: string | null;
   media_url?: string | null;
+  image_url?: string | null;
   imageUrl?: string | null;
   display_image_url?: string | null;
+  campaign_media_url?: string | null;
   is_featured?: boolean;
-  sponsor_name?: string | null; 
+  sponsor_name?: string | null;
 };
 
 type FallbackHero = {
@@ -29,6 +33,8 @@ type FallbackHero = {
   ctaTo: string;
   badge?: string;
 };
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const fallbackHeroes: FallbackHero[] = [
   {
@@ -55,8 +61,10 @@ const fallbackHeroes: FallbackHero[] = [
 
 function formatDate(date?: string) {
   if (!date) return "";
+
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return "";
+
   return parsed.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -66,18 +74,26 @@ function formatDate(date?: string) {
 
 function cleanCountry(country?: string | null) {
   if (!country) return "";
-  const trimmed = country.trim().toLowerCase();
-  if (trimmed === "united states" || trimmed === "united states of america") {
+
+  const trimmed = country.trim();
+  const lower = trimmed.toLowerCase();
+
+  if (lower === "united states" || lower === "united states of america") {
     return "USA";
   }
-  return country;
+
+  return trimmed;
 }
 
 function resolveMediaUrl(url?: string | null) {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+
   const normalized = url.startsWith("/") ? url : `/${url}`;
-  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
+  return `${API_BASE_URL}${normalized}`;
 }
 
 function buildLocation(hero: HeroPromoItem) {
@@ -89,8 +105,10 @@ function buildLocation(hero: HeroPromoItem) {
 function getHeroImageUrl(hero: HeroPromoItem) {
   return (
     resolveMediaUrl(hero.media_url) ||
-    resolveMediaUrl(hero.imageUrl) ||
+    resolveMediaUrl(hero.campaign_media_url) ||
     resolveMediaUrl(hero.display_image_url) ||
+    resolveMediaUrl(hero.image_url) ||
+    resolveMediaUrl(hero.imageUrl) ||
     ""
   );
 }
@@ -118,7 +136,7 @@ function LiveHeroCard({ hero, index }: { hero: HeroPromoItem; index: number }) {
         <div
           style={{
             minHeight: 300,
-            backgroundImage: `linear-gradient(rgba(17,24,39,0.28), rgba(17,24,39,0.42)), url(${heroImageUrl})`,
+            backgroundImage: `linear-gradient(rgba(17,24,39,0.28), rgba(17,24,39,0.42)), url("${heroImageUrl}")`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
@@ -169,9 +187,7 @@ function LiveHeroCard({ hero, index }: { hero: HeroPromoItem; index: number }) {
               fontWeight: 700,
             }}
           >
-            {hero.is_featured
-              ? "Featured visibility"
-              : "Premium homepage visibility"}
+            {hero.is_featured ? "Featured visibility" : "Premium homepage visibility"}
           </p>
 
           <p
@@ -307,19 +323,20 @@ export default function HomepageHero() {
       try {
         setLoading(true);
 
-    const region = getSupportRegion(); // later replace with selected/active region context
+        const region = getSupportRegion();
 
-    const res = await fetch(
-  `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
-);
+        const res = await fetch(
+          `${API_BASE_URL}/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
+        );
+
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
 
         const data = await res.json();
 
-      console.log("HOMEPAGE PROMO REGION REQUEST:", region);
-      console.log("HOMEPAGE PROMO RESPONSE:", data);
+        console.log("HOMEPAGE PROMO REGION REQUEST:", region);
+        console.log("HOMEPAGE PROMO RESPONSE:", data);
 
         const resolvedHero = Array.isArray(data?.hero) ? data.hero : [];
         setLiveHeroes(resolvedHero);
@@ -431,7 +448,7 @@ export default function HomepageHero() {
         {displayHeroes.length > 0
           ? displayHeroes.map((hero, index) => (
               <LiveHeroCard
-                key={hero.event_id || `hero-${index}`}
+                key={hero.event_id || hero.media_url || `hero-${index}`}
                 hero={hero}
                 index={index}
               />
