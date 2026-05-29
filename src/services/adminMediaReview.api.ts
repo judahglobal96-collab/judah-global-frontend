@@ -1,4 +1,4 @@
-const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/campaign-media`;
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL}/api/v1/admin/media-review`;
 
 export type CampaignMediaStatus = 'pending' | 'approved' | 'rejected';
 
@@ -28,21 +28,27 @@ function buildMediaUrl(value?: string | null): string {
     return value;
   }
 
-  return `${import.meta.env.VITE_API_BASE_URL}${value}`;
+  const normalized = value.startsWith('/') ? value : `/${value}`;
+  return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
 
 function normalizeCampaignMediaItem(item: any): CampaignMediaItem {
   return {
     id: item.id ?? item.media_id ?? item.campaign_media_id,
     campaign_id: item.campaign_id ?? null,
-    media_url: buildMediaUrl(item.media_url ?? item.url),
+    media_url: buildMediaUrl(item.media_url ?? item.url ?? item.file_url),
     media_type: item.media_type ?? item.type ?? 'image',
     status: item.status ?? item.moderation_status ?? 'pending',
     placement_type: item.placement_type ?? item.placement_name ?? null,
     sponsor_name: item.sponsor_name ?? item.organization_name ?? null,
-    campaign_title: item.campaign_title ?? item.title ?? 'Campaign media',
+    campaign_title: item.campaign_title ?? item.campaign_name ?? item.title ?? 'Campaign media',
     submitted_at: item.submitted_at ?? item.created_at ?? null,
-    reviewed_at: item.reviewed_at ?? item.updated_at ?? null,
+    reviewed_at:
+      item.reviewed_at ??
+      item.moderation_reviewed_at ??
+      item.approved_at ??
+      item.updated_at ??
+      null,
     rejection_reason: item.rejection_reason ?? item.moderation_reason ?? null,
   };
 }
@@ -50,11 +56,9 @@ function normalizeCampaignMediaItem(item: any): CampaignMediaItem {
 export async function fetchCampaignMediaQueue(
   params: FetchCampaignMediaQueueParams = {},
 ): Promise<CampaignMediaItem[]> {
-  const searchParams = new URLSearchParams();
+  const status = params.status || 'pending';
 
-  if (params.status && params.status !== 'all') {
-    searchParams.set('status', params.status);
-  }
+  const searchParams = new URLSearchParams();
 
   if (params.search?.trim()) {
     searchParams.set('search', params.search.trim());
@@ -62,13 +66,19 @@ export async function fetchCampaignMediaQueue(
 
   const query = searchParams.toString();
 
-  const response = await fetch(`${API_BASE}/pending${query ? `?${query}` : ''}`);
+  const endpoint =
+    status === 'all'
+      ? `${API_BASE}/pending${query ? `?${query}` : ''}`
+      : `${API_BASE}/${status}${query ? `?${query}` : ''}`;
+
+  const response = await fetch(endpoint);
 
   if (!response.ok) {
     throw new Error('Failed to load campaign media review queue.');
   }
 
   const data = await response.json();
+
   const rawMedia = Array.isArray(data?.items)
     ? data.items
     : Array.isArray(data?.media)
@@ -82,7 +92,7 @@ export async function fetchCampaignMediaQueue(
 
 export async function approveCampaignMedia(mediaId: string): Promise<void> {
   const response = await fetch(`${API_BASE}/${mediaId}/approve`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -98,7 +108,7 @@ export async function rejectCampaignMedia(
   reason: string,
 ): Promise<void> {
   const response = await fetch(`${API_BASE}/${mediaId}/reject`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
     },
