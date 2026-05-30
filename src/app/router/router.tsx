@@ -1,3 +1,8 @@
+
+// DEV REFERENCE ROUTER ONLY.
+// Production routing currently lives in src/App.tsx.
+
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import PublicShell from "../../layouts/public-shell";
 import AuthShell from "../../layouts/auth-shell";

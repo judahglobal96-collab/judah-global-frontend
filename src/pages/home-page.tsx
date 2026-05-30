@@ -290,11 +290,23 @@ export default function HomePage() {
     return [...live, ...remaining];
   }, [liveTopRow]);
 
+    let isAdmin = false;
+
+    try {
+      const user = JSON.parse(localStorage.getItem("judah_user") || "null");
+
+      isAdmin = ["admin", "sysadmin", "execsysadmin"].includes(
+        user?.role
+      );
+    } catch {
+      isAdmin = false;
+    }
+
   return (
     <div style={{ display: "grid", gap: 28 }}>
 
-      {/* Regional UI Switch (dev only) */}
-      {import.meta.env.DEV && (
+    {/* Regional Support Selector (admin only) */}
+      {isAdmin && (
   <div
     style={{
       background: "#fff7ed",
