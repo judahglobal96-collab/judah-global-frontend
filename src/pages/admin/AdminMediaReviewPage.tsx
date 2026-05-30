@@ -10,6 +10,7 @@ type FilterStatus = 'pending' | 'approved' | 'rejected' | 'all';
 
 type FlexibleCampaignMediaItem = CampaignMediaItem & {
   media_url?: string | null;
+  media_id?: string | null;
   image_url?: string | null;
   file_url?: string | null;
   asset_url?: string | null;
@@ -189,7 +190,9 @@ function EmptyState() {
     </div>
   );
 }
-
+function getReviewMediaId(item: FlexibleCampaignMediaItem | null): string {
+  return item?.id || item?.media_id || "";
+}
 export default function AdminMediaReviewPage() {
   const [items, setItems] = useState<FlexibleCampaignMediaItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<FlexibleCampaignMediaItem | null>(null);
@@ -264,7 +267,7 @@ console.log(
       setIsSubmittingAction(true);
       setActionMessage('');
 
-      await approveCampaignMedia(item.id);
+    await approveCampaignMedia(getReviewMediaId(item));
 
       setActionMessage('Media approved successfully.');
       await loadQueue();
@@ -283,8 +286,10 @@ console.log(
       setIsSubmittingAction(true);
       setActionMessage('');
 
-      await rejectCampaignMedia(selectedItem.id, reason);
-
+await rejectCampaignMedia(
+  getReviewMediaId(selectedItem),
+  reason
+);
       setIsRejectModalOpen(false);
       setActionMessage('Media rejected successfully.');
       await loadQueue();
