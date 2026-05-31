@@ -391,7 +391,7 @@ function getItemScheduleLabel(item: CampaignItem) {
   }
 
   if (item.placementType === "official_flyer") {
-    return "One-time placement · lives until linked event expires";
+    return "One-time placement · Active until linked event expires";
   }
 
   if (item.placementType === "org_subscription") {
@@ -660,7 +660,7 @@ const campaignSubtotal = useMemo(() => {
     if (!previewSourceItem) return formatDate(calendarAnchorDate);
 
     if (previewSourceItem.placementType === "official_flyer") {
-      return "Lives until event expires";
+      return "Active until event expires";
     }
 
     if (previewSourceItem.placementType === "event_fee") {
@@ -700,7 +700,7 @@ const campaignSubtotal = useMemo(() => {
 
   const previewDescription = useMemo(() => {
     if (previewSourceItem?.placementType === "official_flyer") {
-      return "Official full-page flyer placement on the event detail page.";
+      return "View the Official full-page flyer on the event detail page.";
     }
 
     if (previewSourceItem?.placementType === "event_fee") {
@@ -1171,8 +1171,9 @@ const campaignSubtotal = useMemo(() => {
 
     for (let index = 0; index < items.length; index += 1) {
       const builderItem = items[index];
-      const createdItem = createdItems[index];
-
+      const createdItem = createdItems.find(
+        (created) => created.placement_type === builderItem.placementType
+    );
       if (!builderItem?.localMediaFile || !createdItem?.id) continue;
 
       const formData = new FormData();
