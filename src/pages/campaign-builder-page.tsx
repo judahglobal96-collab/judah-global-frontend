@@ -1179,7 +1179,7 @@ const campaignSubtotal = useMemo(() => {
       const formData = new FormData();
       formData.append("campaignId", campaignId);
       formData.append("campaignItemId", createdItem.id);
-      formData.append("placementType", createdItem.placement_type);
+      formData.append("placementType", builderItem.placementType);
       formData.append("upload_type", "campaign_promo");
       formData.append("region", selectedRegion);
       if (orgUuid) formData.append("orgUuid", orgUuid);
