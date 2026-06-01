@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import HomepageHero from "../components/homepage/HomepageHero";
 import { getSupportRegion } from "../utils/region";
 
-
 const topRowFallbackImage = "/images/judah-default-fallback.png";
 
 type HomepagePromoItem = {
@@ -37,8 +36,7 @@ const fallbackTopRowPromos: TopRowPromo[] = [
   {
     id: "top-row-1",
     title: "Homepage Top Row Placement 1",
-    body:
-      "Top row promotional placement for events, campaigns, announcements, or sponsor media.",
+    body: "Top row promotional placement for events, campaigns, announcements, or sponsor media.",
     ctaLabel: "Learn More",
     ctaTo: "/events",
     badge: "Top Row",
@@ -47,8 +45,7 @@ const fallbackTopRowPromos: TopRowPromo[] = [
   {
     id: "top-row-2",
     title: "Homepage Top Row Placement 2",
-    body:
-      "Designed for homepage campaign exposure with simple CTA-driven visibility.",
+    body: "Designed for homepage campaign exposure with simple CTA-driven visibility.",
     ctaLabel: "Learn More",
     ctaTo: "/events",
     badge: "Top Row",
@@ -57,8 +54,7 @@ const fallbackTopRowPromos: TopRowPromo[] = [
   {
     id: "top-row-3",
     title: "Homepage Top Row Placement 3",
-    body:
-      "Reserved for active paid homepage top-row promotional inventory.",
+    body: "Reserved for active paid homepage top-row promotional inventory.",
     ctaLabel: "Learn More",
     ctaTo: "/events",
     badge: "Top Row",
@@ -70,6 +66,7 @@ function formatDate(date?: string) {
   if (!date) return "";
   const parsed = new Date(date);
   if (Number.isNaN(parsed.getTime())) return "";
+
   return parsed.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -79,16 +76,20 @@ function formatDate(date?: string) {
 
 function cleanCountry(country?: string | null) {
   if (!country) return "";
+
   const trimmed = country.trim().toLowerCase();
+
   if (trimmed === "united states" || trimmed === "united states of america") {
     return "USA";
   }
+
   return country;
 }
 
 function resolveMediaUrl(url?: string | null) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
+
   const normalized = url.startsWith("/") ? url : `/${url}`;
   return `${import.meta.env.VITE_API_BASE_URL}${normalized}`;
 }
@@ -116,6 +117,7 @@ function getPromoImageUrl(
 ): string {
   if (isLive) {
     const livePromo = promo as HomepagePromoItem;
+
     return (
       resolveMediaUrl(livePromo.media_url) ||
       resolveMediaUrl(livePromo.imageUrl) ||
@@ -145,9 +147,7 @@ function HomepageTopRowCard({
   const body = isLive ? buildPromoBody(livePromo) : staticPromo.body;
 
   const ctaTo =
-    isLive && livePromo.event_id
-      ? `/event/${livePromo.event_id}`
-      : staticPromo.ctaTo;
+    isLive && livePromo.event_id ? `/event/${livePromo.event_id}` : staticPromo.ctaTo;
 
   const ctaLabel = isLive ? "View Event" : staticPromo.ctaLabel;
 
@@ -255,19 +255,32 @@ export default function HomePage() {
   const [liveTopRow, setLiveTopRow] = useState<HomepagePromoItem[]>([]);
   const [loadingTopRow, setLoadingTopRow] = useState(true);
 
+  const currentSupportRegion =
+    localStorage.getItem("judah_support_region") || "United States";
+
+  const authUser = JSON.parse(localStorage.getItem("auth_user") || "null");
+
+  const isAdmin = ["admin", "sysadmin", "execsysadmin"].includes(
+    authUser?.role
+  );
+
   useEffect(() => {
     async function loadHomepagePromos() {
       try {
-  const region = getSupportRegion(); // TEMP for P0.3
+        const region = getSupportRegion();
 
-  const res = await fetch(
-  `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
-);
+        const res = await fetch(
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/v1/events/homepage-promos?region=${encodeURIComponent(region)}`
+        );
+
         if (!res.ok) {
           throw new Error(`Request failed with status ${res.status}`);
         }
 
         const data = await res.json();
+
         setLiveTopRow(Array.isArray(data?.topRow) ? data.topRow : []);
       } catch (error) {
         console.error("Failed to load homepage promos:", error);
@@ -290,61 +303,46 @@ export default function HomePage() {
     return [...live, ...remaining];
   }, [liveTopRow]);
 
-    let isAdmin = false;
-
-    try {
-      const user = JSON.parse(localStorage.getItem("judah_user") || "null");
-
-      isAdmin = ["admin", "sysadmin", "execsysadmin"].includes(
-        user?.role
-      );
-    } catch {
-      isAdmin = false;
-    }
-
   return (
     <div style={{ display: "grid", gap: 28 }}>
-
-    {/* Regional Support Selector (admin only) */}
       {isAdmin && (
-  <div
-    style={{
-      background: "#fff7ed",
-      border: "1px solid #fdba74",
-      borderRadius: 12,
-      padding: 12,
-      marginBottom: 8,
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      fontWeight: 600,
-    }}
-  >
-    <span>
-      Support Region: <strong>{localStorage.getItem("judah_support_region") || "United States"}</strong>
-    </span>
-    
-    <select
-      defaultValue={
-        localStorage.getItem("judah_support_region") || "United States"
-      }
-      onChange={(e) => {
-        localStorage.setItem("judah_support_region", e.target.value);
-        window.location.reload();
-      }}
-      style={{
-        padding: "6px 10px",
-        borderRadius: 8,
-        border: "1px solid #cbd5f5",
-      }}
-    >
-      <option value="United States">United States</option>
-      <option value="Canada">Canada</option>
-      <option value="United Kingdom">United Kingdom</option>
-      <option value="Africa">Africa</option>
-    </select>
-  </div>
-)}
+        <div
+          style={{
+            background: "#fff7ed",
+            border: "1px solid #fdba74",
+            borderRadius: 12,
+            padding: 12,
+            marginBottom: 8,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            fontWeight: 600,
+          }}
+        >
+          <span>
+            Support Region: <strong>{currentSupportRegion}</strong>
+          </span>
+
+          <select
+            defaultValue={currentSupportRegion}
+            onChange={(e) => {
+              localStorage.setItem("judah_support_region", e.target.value);
+              window.location.reload();
+            }}
+            style={{
+              padding: "6px 10px",
+              borderRadius: 8,
+              border: "1px solid #cbd5f5",
+            }}
+          >
+            <option value="United States">United States</option>
+            <option value="Canada">Canada</option>
+            <option value="United Kingdom">United Kingdom</option>
+            <option value="Africa">Africa</option>
+          </select>
+        </div>
+      )}
+
       <section
         style={{
           background: "#ffffff",
