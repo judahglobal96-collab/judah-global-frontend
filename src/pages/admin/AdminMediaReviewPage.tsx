@@ -18,15 +18,19 @@ type FlexibleCampaignMediaItem = CampaignMediaItem & {
   campaign_media_url?: string | null;
   storage_url?: string | null;
   url?: string | null;
+  event_image_url?: string | null;
+  flyer_url?: string | null;
+  event_media_url?: string | null;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-//*const DEFAULT_FALLBACK_IMAGE = '/images/judah-default-fallback.png';*//
 
 function formatDate(value?: string | null): string {
   if (!value) return '—';
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return '—';
+
   return date.toLocaleString();
 }
 
@@ -41,24 +45,75 @@ function toAbsoluteMediaUrl(url?: string | null): string {
   return `${API_BASE_URL}${normalized}`;
 }
 
-function getCampaignMediaUrl(item?: FlexibleCampaignMediaItem | null): string {
-  if (!item) return '';
+function isCampaignMediaItem(item?: FlexibleCampaignMediaItem | null): boolean {
+  if (!item) return false;
 
-  return toAbsoluteMediaUrl(
-    item.media_url ||
-      item.campaign_media_url ||
-      item.image_url ||
-      item.file_url ||
-      item.asset_url ||
-      item.public_url ||
-      item.storage_url ||
-      item.url ||
-      ''
+  return (
+    item.media_type === 'campaign_media' ||
+    Boolean(item.campaign_id) ||
+    Boolean(item.placement_type)
   );
 }
 
-function getSafeMediaType(item?: FlexibleCampaignMediaItem | null): string {
-  return item?.media_type || 'image';
+function getCampaignMediaUrl(item?: FlexibleCampaignMediaItem | null): string {
+  if (!item) return '';
+
+  /*
+    IMPORTANT:
+    Do not use event_image_url, flyer_url, or event_media_url here.
+    This page reviews PAID CAMPAIGN / PROMO MEDIA only.
+
+    For campaign media, prefer campaign-specific upload fields first.
+    image_url is intentionally last because backend/event joins often expose
+    event images under image_url, which caused Major Event promo images to
+    be replaced by the event image.
+  */
+
+  const campaignOnlyUrl =
+    item.campaign_media_url ||
+    item.media_url ||
+    item.file_url ||
+    item.asset_url ||
+    item.public_url ||
+    item.storage_url ||
+    item.url ||
+    '';
+
+  if (campaignOnlyUrl) {
+    return toAbsoluteMediaUrl(campaignOnlyUrl);
+  }
+
+  /*
+    Last-resort compatibility only:
+    use image_url only when this record clearly looks like campaign media
+    and no campaign-specific URL was returned.
+  */
+  if (isCampaignMediaItem(item) && item.image_url) {
+    return toAbsoluteMediaUrl(item.image_url);
+  }
+
+  return '';
+}
+
+function getSafeMediaKind(item?: FlexibleCampaignMediaItem | null): 'image' | 'video' {
+  const rawType = String(item?.media_type || '').toLowerCase();
+  const url = getCampaignMediaUrl(item).toLowerCase();
+
+  if (
+    rawType.includes('video') ||
+    url.endsWith('.mp4') ||
+    url.endsWith('.webm') ||
+    url.endsWith('.mov') ||
+    url.endsWith('.m4v')
+  ) {
+    return 'video';
+  }
+
+  return 'image';
+}
+
+function getReviewMediaId(item: FlexibleCampaignMediaItem | null): string {
+  return item?.id || item?.media_id || '';
 }
 
 function StatusBadge({ status }: { status?: string | null }) {
@@ -68,8 +123,8 @@ function StatusBadge({ status }: { status?: string | null }) {
     safeStatus === 'approved'
       ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
       : safeStatus === 'rejected'
-      ? 'bg-red-50 text-red-700 border-red-200'
-      : 'bg-amber-50 text-amber-700 border-amber-200';
+        ? 'bg-red-50 text-red-700 border-red-200'
+        : 'bg-amber-50 text-amber-700 border-amber-200';
 
   return (
     <span
@@ -90,24 +145,28 @@ function MediaPreview({
   alt: string;
 }) {
   const mediaUrl = getCampaignMediaUrl(item);
-  const mediaType = getSafeMediaType(item);
+  const mediaKind = getSafeMediaKind(item);
 
   if (!mediaUrl) {
-    return null;
+    return (
+      <div className="flex h-full min-h-[180px] w-full items-center justify-center bg-slate-100 px-4 text-center text-sm text-slate-500">
+        No campaign media URL returned.
+      </div>
+    );
   }
 
-  if (mediaType === 'video') {
+  if (mediaKind === 'video') {
     return <video src={mediaUrl} controls className={className} />;
   }
 
   return (
-<img
-  src={mediaUrl}
-  alt={alt}
-  className="w-full max-w-[500px] h-auto border-4 border-red-500 object-contain"
-  onLoad={() => console.log("IMAGE LOADED:", mediaUrl)}
-  onError={() => console.error("IMAGE FAILED:", mediaUrl, item)}
-/>
+    <img
+      src={mediaUrl}
+      alt={alt}
+      className={className}
+      onLoad={() => console.log('CAMPAIGN MEDIA IMAGE LOADED:', mediaUrl)}
+      onError={() => console.error('CAMPAIGN MEDIA IMAGE FAILED:', mediaUrl, item)}
+    />
   );
 }
 
@@ -116,6 +175,19 @@ function LoadingState() {
     <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm">
       <p className="text-sm text-slate-600">
         Loading campaign media review queue...
+      </p>
+    </div>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900">
+        No campaign media items found
+      </h3>
+      <p className="mt-2 text-sm text-slate-600">
+        Try changing the filter or search term.
       </p>
     </div>
   );
@@ -144,6 +216,7 @@ function RejectModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
         <h2 className="text-xl font-semibold text-slate-900">Reject media</h2>
+
         <p className="mt-2 text-sm text-slate-600">
           Add a short reason so the moderation decision is documented clearly.
         </p>
@@ -180,21 +253,6 @@ function RejectModal({
   );
 }
 
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">
-        No media items found
-      </h3>
-      <p className="mt-2 text-sm text-slate-600">
-        Try changing the filter or search term.
-      </p>
-    </div>
-  );
-}
-function getReviewMediaId(item: FlexibleCampaignMediaItem | null): string {
-  return item?.id || item?.media_id || "";
-}
 export default function AdminMediaReviewPage() {
   const [items, setItems] = useState<FlexibleCampaignMediaItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<FlexibleCampaignMediaItem | null>(null);
@@ -216,24 +274,36 @@ export default function AdminMediaReviewPage() {
         search,
       })) as FlexibleCampaignMediaItem[];
 
-console.log('ADMIN MEDIA REVIEW RAW QUEUE:', queue);
-console.log(
-  'ADMIN MEDIA REVIEW MEDIA FIELDS:',
-  queue.map((item) => ({
-    id: item.id,
-    media_url: item.media_url,
-    campaign_media_url: item.campaign_media_url,
-    image_url: item.image_url,
-    file_url: item.file_url,
-    asset_url: item.asset_url,
-    public_url: item.public_url,
-    storage_url: item.storage_url,
-    url: item.url,
-  }))
-);
-  const queueWithMedia = queue.filter((item) => Boolean(getCampaignMediaUrl(item)));
+      console.log('ADMIN MEDIA REVIEW RAW QUEUE:', queue);
+      console.log(
+        'ADMIN MEDIA REVIEW MEDIA FIELDS:',
+        queue.map((item) => ({
+          id: item.id,
+          media_id: item.media_id,
+          campaign_id: item.campaign_id,
+          placement_type: item.placement_type,
+          media_type: item.media_type,
+          campaign_media_url: item.campaign_media_url,
+          media_url: item.media_url,
+          file_url: item.file_url,
+          asset_url: item.asset_url,
+          public_url: item.public_url,
+          storage_url: item.storage_url,
+          url: item.url,
+          image_url: item.image_url,
+          event_image_url: item.event_image_url,
+          flyer_url: item.flyer_url,
+          event_media_url: item.event_media_url,
+          resolved_campaign_url: getCampaignMediaUrl(item),
+        }))
+      );
 
-  setItems(queueWithMedia);
+      const campaignItemsOnly = queue.filter((item) => isCampaignMediaItem(item));
+      const queueWithMedia = campaignItemsOnly.filter((item) =>
+        Boolean(getCampaignMediaUrl(item))
+      );
+
+      setItems(queueWithMedia);
 
       setSelectedItem((current) => {
         if (!queueWithMedia.length) return null;
@@ -265,11 +335,18 @@ console.log(
   }
 
   async function handleApprove(item: FlexibleCampaignMediaItem) {
+    const mediaId = getReviewMediaId(item);
+
+    if (!mediaId) {
+      setActionMessage('Unable to approve media: missing media ID.');
+      return;
+    }
+
     try {
       setIsSubmittingAction(true);
       setActionMessage('');
 
-    await approveCampaignMedia(getReviewMediaId(item));
+      await approveCampaignMedia(mediaId);
 
       setActionMessage('Media approved successfully.');
       await loadQueue();
@@ -284,14 +361,19 @@ console.log(
   async function handleReject(reason: string) {
     if (!selectedItem) return;
 
+    const mediaId = getReviewMediaId(selectedItem);
+
+    if (!mediaId) {
+      setActionMessage('Unable to reject media: missing media ID.');
+      return;
+    }
+
     try {
       setIsSubmittingAction(true);
       setActionMessage('');
 
-await rejectCampaignMedia(
-  getReviewMediaId(selectedItem),
-  reason
-);
+      await rejectCampaignMedia(mediaId, reason);
+
       setIsRejectModalOpen(false);
       setActionMessage('Media rejected successfully.');
       await loadQueue();
@@ -416,14 +498,17 @@ await rejectCampaignMedia(
                             <span className="font-medium text-slate-800">Placement:</span>{' '}
                             {item.placement_type || '—'}
                           </div>
+
                           <div>
                             <span className="font-medium text-slate-800">Media Type:</span>{' '}
-                            {item.media_type || 'image'}
+                            {item.media_type || 'campaign_media'}
                           </div>
+
                           <div>
                             <span className="font-medium text-slate-800">Submitted:</span>{' '}
                             {formatDate(item.submitted_at)}
                           </div>
+
                           <div>
                             <span className="font-medium text-slate-800">Reviewed:</span>{' '}
                             {formatDate(item.reviewed_at)}
@@ -431,8 +516,10 @@ await rejectCampaignMedia(
                         </div>
 
                         <div className="mt-4 break-all rounded-2xl bg-slate-50 p-3 text-xs text-slate-500">
-                          <span className="font-semibold text-slate-700">Resolved media URL:</span>{' '}
-                          {mediaUrl || 'No media URL returned by API'}
+                          <span className="font-semibold text-slate-700">
+                            Resolved campaign media URL:
+                          </span>{' '}
+                          {mediaUrl || 'No campaign media URL returned by API'}
                         </div>
 
                         {item.rejection_reason ? (
@@ -455,7 +542,7 @@ await rejectCampaignMedia(
                     <MediaPreview
                       item={selectedItem}
                       alt={selectedItem.campaign_title || 'Selected campaign media'}
-                      className="h-[360px] w-full object-cover"
+                      className="h-[360px] w-full object-contain"
                     />
                   </div>
 
@@ -477,35 +564,46 @@ await rejectCampaignMedia(
                       <span className="font-semibold text-slate-900">Sponsor:</span>{' '}
                       {selectedItem.sponsor_name || '—'}
                     </div>
+
                     <div>
                       <span className="font-semibold text-slate-900">Campaign ID:</span>{' '}
                       {selectedItem.campaign_id || '—'}
                     </div>
+
                     <div>
                       <span className="font-semibold text-slate-900">Placement:</span>{' '}
                       {selectedItem.placement_type || '—'}
                     </div>
+
                     <div>
                       <span className="font-semibold text-slate-900">Media Type:</span>{' '}
-                      {selectedItem.media_type || 'image'}
+                      {selectedItem.media_type || 'campaign_media'}
                     </div>
+
                     <div>
                       <span className="font-semibold text-slate-900">Submitted:</span>{' '}
                       {formatDate(selectedItem.submitted_at)}
                     </div>
+
                     <div>
                       <span className="font-semibold text-slate-900">Reviewed:</span>{' '}
                       {formatDate(selectedItem.reviewed_at)}
                     </div>
+
                     <div className="break-all">
-                      <span className="font-semibold text-slate-900">Resolved Media URL:</span>{' '}
-                      {getCampaignMediaUrl(selectedItem) || 'No media URL returned by API'}
+                      <span className="font-semibold text-slate-900">
+                        Resolved Campaign Media URL:
+                      </span>{' '}
+                      {getCampaignMediaUrl(selectedItem) ||
+                        'No campaign media URL returned by API'}
                     </div>
                   </div>
 
                   {selectedItem.rejection_reason ? (
                     <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-700">
-                      <span className="font-semibold text-slate-900">Moderation note:</span>{' '}
+                      <span className="font-semibold text-slate-900">
+                        Moderation note:
+                      </span>{' '}
                       {selectedItem.rejection_reason}
                     </div>
                   ) : null}

@@ -320,7 +320,7 @@ export default function HomePage() {
           }}
         >
           <span>
-            Support Region: <strong>{currentSupportRegion}</strong>
+            Promo Region: <strong>{currentSupportRegion}</strong>
           </span>
 
           <select

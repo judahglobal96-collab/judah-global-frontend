@@ -14,9 +14,32 @@ export default function SubmitEventPage() {
           marginRight: "auto",
         }}
       >
-        <h1 style={{ marginTop: 0 }}>Submit Event Portal</h1>
+        <h1 
+          style={{ 
+            margin: 0,
+            marginBottom: 12,
+            fontSize: "2.4rem",
+            lineHeight: 1.05,
+            color: "#ffffff",
 
-        <p style={{ color: "#555", lineHeight: 1.7, maxWidth: 700 }}>
+             }}
+             >
+              Submit Event Portal
+              </h1>
+
+        <p 
+        style={{ 
+            margin: 0,
+            maxWidth: 760,
+            marginLeft: "auto",
+            marginRight: "auto",
+            lineHeight: 1.8,
+            color: "#e2e8f0",
+            textAlign: "center",
+          
+          }}
+
+          >
           Add your faith-based event here. Ensure you have all your media ready to upload
           (see the Media Placement Guide). Once approved your event becomes discoverable 
           worldwide.
