@@ -101,11 +101,13 @@ function MediaPreview({
   }
 
   return (
-    <img
-      src={mediaUrl}
-      alt={alt}
-      className={className}
-    />
+<img
+  src={mediaUrl}
+  alt={alt}
+  className="w-full max-w-[500px] h-auto border-4 border-red-500 object-contain"
+  onLoad={() => console.log("IMAGE LOADED:", mediaUrl)}
+  onError={() => console.error("IMAGE FAILED:", mediaUrl, item)}
+/>
   );
 }
 
