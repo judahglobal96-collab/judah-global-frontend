@@ -162,7 +162,7 @@ export default function SubmitEventSchedulePage() {
   return (
     <SubmitEventLayout
       title="Event Schedule"
-      description="Set your event dates and time. If you need 'recurring' event set up org acct."
+      description="Set your event dates and time. If you need 'recurring' event dates, you must set up org acct."
     >
       <div className="form-grid">
         <div className="form-row">

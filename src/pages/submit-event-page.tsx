@@ -10,6 +10,8 @@ export default function SubmitEventPage() {
           borderRadius: 20,
           padding: 36,
           maxWidth: 860,
+          marginLeft: "auto",
+          marginRight: "auto",
         }}
       >
         <h1 style={{ marginTop: 0 }}>Submit Event Portal</h1>

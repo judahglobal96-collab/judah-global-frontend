@@ -3,7 +3,7 @@ import SubmitEventLayout from "../components/submit-event/submit-event-layout";
 import { getSubmitEventDraft, saveSubmitEventDraft } from "../lib/submit-event-draft";
 
 const EVENT_FEE_CENTS = 7900;
-const FEATURED_BADGE_CENTS = 7900;
+const FEATURED_BADGE_CENTS = 10900;
 const MAJOR_EVENT_PUBLIC_CENTS = 24900;
 
 type StarterPlacement = "featured_badge" | "major_events";
@@ -180,7 +180,7 @@ export default function SubmitEventMonetizationPage() {
 
   return (
     <SubmitEventLayout
-      title="New Monetization Page"
+      title="New Monetization Portal"
       description="Build your promotion using Campaign Builder. Choose visibility options, upload media, select dates, and complete checkout in one guided workflow."
     >
       <div
@@ -203,7 +203,7 @@ export default function SubmitEventMonetizationPage() {
                 fontWeight: 700,
               }}
             >
-              Campaign Builder
+              Campaign Builder™
             </div>
 
             <h3 style={{ marginTop: 0, marginBottom: 10 }}>
@@ -211,7 +211,7 @@ export default function SubmitEventMonetizationPage() {
             </h3>
 
             <div style={{ color: "#475467", lineHeight: 1.7, marginBottom: 18 }}>
-             Campaign Builder is the central promotion experience for Judah Global. 
+             Campaign Builder™ is the central promotion experience for Judah Global. 
              Plan high-visibility placements, upload promo media, select activation dates, 
              review pricing, and complete checkout in one unified workflow.
             </div>
@@ -226,7 +226,7 @@ export default function SubmitEventMonetizationPage() {
               }}
             >
               <div style={{ fontWeight: 800, fontSize: 16, marginBottom: 10 }}>
-                What happens in Campaign Builder
+                What happens in Campaign Builder™
               </div>
 
               <div style={{ color: "#475467", lineHeight: 1.7 }}>
@@ -252,7 +252,7 @@ export default function SubmitEventMonetizationPage() {
                 style={primaryButtonStyle}
                 onClick={() => openCampaignBuilder()}
               >
-                Open Campaign Builder
+                Open Campaign Builder™
               </button>
 
               <button
@@ -362,7 +362,7 @@ export default function SubmitEventMonetizationPage() {
                     </div>
 
                     <div style={helperBoxStyle}>
-                      Major Events promotion is configured in Campaign Builder,
+                      Major Events promotion is configured in Campaign Builder™,
                       where you can select the activation start date, upload
                       promo media, review pricing, and complete checkout.
                     </div>
@@ -453,7 +453,7 @@ export default function SubmitEventMonetizationPage() {
             <div style={summaryRow}>
               <span>Add Promo Placements</span>
               <strong style={{ textAlign: "right" }}>
-                Select Campaign Builder
+                Select Campaign Builder™
               </strong>
             </div>
 

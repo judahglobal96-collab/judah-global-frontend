@@ -124,6 +124,8 @@ export default function MajorEventsPage() {
           style={{
             margin: 0,
             maxWidth: 760,
+            marginLeft: "auto",
+            marginRight: "auto",
             lineHeight: 1.8,
             color: "#e2e8f0",
             textAlign: "center",
