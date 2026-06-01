@@ -58,41 +58,35 @@ function isCampaignMediaItem(item?: FlexibleCampaignMediaItem | null): boolean {
 function getCampaignMediaUrl(item?: FlexibleCampaignMediaItem | null): string {
   if (!item) return '';
 
-  /*
-    IMPORTANT:
-    Do not use event_image_url, flyer_url, or event_media_url here.
-    This page reviews PAID CAMPAIGN / PROMO MEDIA only.
+  const isMajorEventPlacement =
+    item.placement_type === 'major_events' ||
+    item.placement_type === 'major_event' ||
+    item.placement_type === 'major-events';
 
-    For campaign media, prefer campaign-specific upload fields first.
-    image_url is intentionally last because backend/event joins often expose
-    event images under image_url, which caused Major Event promo images to
-    be replaced by the event image.
-  */
+  if (isMajorEventPlacement) {
+    return toAbsoluteMediaUrl(
+      item.campaign_media_url ||
+        item.media_url ||
+        item.file_url ||
+        item.asset_url ||
+        item.public_url ||
+        item.storage_url ||
+        item.url ||
+        ''
+    );
+  }
 
-  const campaignOnlyUrl =
-    item.campaign_media_url ||
+  return toAbsoluteMediaUrl(
     item.media_url ||
-    item.file_url ||
-    item.asset_url ||
-    item.public_url ||
-    item.storage_url ||
-    item.url ||
-    '';
-
-  if (campaignOnlyUrl) {
-    return toAbsoluteMediaUrl(campaignOnlyUrl);
-  }
-
-  /*
-    Last-resort compatibility only:
-    use image_url only when this record clearly looks like campaign media
-    and no campaign-specific URL was returned.
-  */
-  if (isCampaignMediaItem(item) && item.image_url) {
-    return toAbsoluteMediaUrl(item.image_url);
-  }
-
-  return '';
+      item.campaign_media_url ||
+      item.image_url ||
+      item.file_url ||
+      item.asset_url ||
+      item.public_url ||
+      item.storage_url ||
+      item.url ||
+      ''
+  );
 }
 
 function getSafeMediaKind(item?: FlexibleCampaignMediaItem | null): 'image' | 'video' {
