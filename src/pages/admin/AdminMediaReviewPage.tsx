@@ -11,6 +11,7 @@ type FilterStatus = 'pending' | 'approved' | 'rejected' | 'all';
 type FlexibleCampaignMediaItem = CampaignMediaItem & {
   media_url?: string | null;
   media_id?: string | null;
+  campaign_media_id?: string | null;
   image_url?: string | null;
   file_url?: string | null;
   asset_url?: string | null;
@@ -107,7 +108,7 @@ function getSafeMediaKind(item?: FlexibleCampaignMediaItem | null): 'image' | 'v
 }
 
 function getReviewMediaId(item: FlexibleCampaignMediaItem | null): string {
-  return item?.id || item?.media_id || '';
+  return item?.campaign_media_id || item?.media_id || item?.id || '';
 }
 
 function StatusBadge({ status }: { status?: string | null }) {
@@ -289,6 +290,7 @@ export default function AdminMediaReviewPage() {
           flyer_url: item.flyer_url,
           event_media_url: item.event_media_url,
           resolved_campaign_url: getCampaignMediaUrl(item),
+          review_id_being_sent: getReviewMediaId(item),
         }))
       );
 
