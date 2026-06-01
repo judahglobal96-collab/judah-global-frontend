@@ -12,12 +12,12 @@ export default function SubmitEventPage() {
           maxWidth: 860,
         }}
       >
-        <h1 style={{ marginTop: 0 }}>Submit an Event</h1>
+        <h1 style={{ marginTop: 0 }}>Submit Event Portal</h1>
 
         <p style={{ color: "#555", lineHeight: 1.7, maxWidth: 700 }}>
-          Add conferences, worship nights, prayer gatherings, church revivals,
-          youth events, and ministry gatherings to JUDAH GLOBAL. After review
-          and approval, your event becomes discoverable worldwide.
+          Add your faith-based event here. Ensure you have all your media ready to upload
+          (see the Media Placement Guide). Once approved your event becomes discoverable 
+          worldwide.
         </p>
 
         <div className="form-actions">

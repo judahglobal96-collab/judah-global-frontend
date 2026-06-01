@@ -114,6 +114,7 @@ export default function MajorEventsPage() {
             marginBottom: 12,
             fontSize: "2.4rem",
             lineHeight: 1.05,
+            color: "#ffffff",
           }}
         >
           Major Events
@@ -125,10 +126,11 @@ export default function MajorEventsPage() {
             maxWidth: 760,
             lineHeight: 1.8,
             color: "#e2e8f0",
+            textAlign: "center",
           }}
         >
-          Explore high-visibility, high-impact events surfaced through Judah
-          Global’s Major Event promotion tier. Events shown here remain eligible
+          Our most popular promotion tier. Explore high-visibility, high-impact events surfaced
+          through Judah Global’s Major Event promotion tier. Events shown here remain eligible
           even when they are also Featured.
         </p>
       </section>

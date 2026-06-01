@@ -211,7 +211,7 @@ export default function SubmitEventBasicsPage() {
           )}
 
           <p className="helper-text">
-            This image will appear on the event page after admin approval.
+            This image will appear on the event detailed page after admin approval. i.e Org or church logo
           </p>
         </div>
 
