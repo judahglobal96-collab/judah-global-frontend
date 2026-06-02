@@ -193,32 +193,57 @@ export default function SubmitEventLayout({
         }
       `}</style>
 
-      <div style={{ marginBottom: 32 }}>
-        <h1
+        <section
           style={{
-            margin: 0,
-            marginBottom: 12,
-            fontSize: "2.75rem",
-            fontWeight: 800,
-            letterSpacing: "-0.5px",
+            marginBottom: 32,
+            borderRadius: 24,
+            padding: "32px 28px",
+            background: "linear-gradient(135deg, #0f172a, #1e293b)",
+            color: "#ffffff",
+            textAlign: "center",
           }}
         >
-          {title}
-        </h1>
+          <p
+            style={{
+              margin: 0,
+              marginBottom: 10,
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "#fcd34d",
+            }}
+          >
+            Judah Global
+          </p>
 
-        <p
-          style={{
-            margin: 0,
-            color: "#64748b",
-            fontSize: "1.1rem",
-            maxWidth: 720,
-            lineHeight: 1.6,
-          }}
-        >
-          {description}
-        </p>
-      </div>
+          <h1
+            style={{
+              margin: 0,
+              marginBottom: 12,
+              fontSize: "2.75rem",
+              fontWeight: 800,
+              letterSpacing: "-0.5px",
+              color: "#ffffff",
+            }}
+          >
+            {title}
+          </h1>
 
+          <p
+            style={{
+              margin: 0,
+              maxWidth: 720,
+              marginLeft: "auto",
+              marginRight: "auto",
+              lineHeight: 1.6,
+              color: "rgba(255,255,255,0.9)",
+            }}
+          >
+            {description}
+          </p>
+        </section>
+        
       <div
         className="submit-grid"
         style={{
