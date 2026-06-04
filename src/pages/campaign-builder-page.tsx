@@ -946,12 +946,13 @@ const campaignSubtotal = useMemo(() => {
       return;
     }
 
-    const generated = Array.from({ length: quickBuilderWeeks }).map((_, index) =>
-      createDefaultWeeklyItem(
+    const generated = Array.from({ length: quickBuilderWeeks }).map((_, index) => ({
+      ...createDefaultWeeklyItem(
         quickBuilderPlacementType,
         addDays(toWeekStart(calendarAnchorDate), index * 7)
-      )
-    );
+      ),
+      regionCode: selectedRegion,
+    }));
 
     setItems((prev) => [...prev, ...generated]);
     if (generated[0]) setSelectedItemId(generated[0].id);
@@ -1256,7 +1257,7 @@ if (validationMessage) {
           regionCode: selectedRegion,
           items: items.map((item) => ({
             placementType: item.placementType,
-            regionCode: selectedRegion,
+            regionCode: item.regionCode || selectedRegion,
             startDate:
               item.placementType === "official_flyer" ||
               item.placementType === "event_fee" ||
