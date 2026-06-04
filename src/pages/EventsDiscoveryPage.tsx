@@ -355,7 +355,6 @@ export default function EventsDiscoveryPage() {
       }
 
       const data = await res.json();
-      console.log("DISCOVERY EVENTS RESPONSE:", data);
 
       const resolvedEvents = Array.isArray(data?.results)
         ? data.results
@@ -365,8 +364,14 @@ export default function EventsDiscoveryPage() {
         ? data.events
         : [];
 
-      setEvents(resolvedEvents);
-
+        setEvents(
+          resolvedEvents.map((event: EventCardItem) => ({
+            ...event,
+            is_featured: Boolean(event.is_featured),
+            is_major_event: Boolean(event.is_major_event),
+          }))
+        );
+        
       setTotalPages(
         typeof data?.total_pages === "number" && data.total_pages > 0
           ? data.total_pages
@@ -778,6 +783,8 @@ export default function EventsDiscoveryPage() {
             }}
           >
             {events.map((event, index) => {
+              console.log("DISCOVERY EVENT CARD DATA", event);
+
               const key = event.event_id || event.id || String(index);
               return (
                 <EventCard
