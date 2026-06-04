@@ -45,17 +45,6 @@ function toAbsoluteMediaUrl(url?: string | null): string {
   const normalized = url.startsWith('/') ? url : `/${url}`;
   return `${API_BASE_URL}${normalized}`;
 }
-
-function isCampaignMediaItem(item?: FlexibleCampaignMediaItem | null): boolean {
-  if (!item) return false;
-
-  return (
-    item.media_type === 'campaign_media' ||
-    Boolean(item.campaign_id) ||
-    Boolean(item.placement_type)
-  );
-}
-
 function getCampaignMediaUrl(item?: FlexibleCampaignMediaItem | null): string {
   if (!item) return '';
 
@@ -294,11 +283,15 @@ export default function AdminMediaReviewPage() {
         }))
       );
 
-      const campaignItemsOnly = queue.filter((item) => isCampaignMediaItem(item));
-      const queueWithMedia = campaignItemsOnly.filter((item) =>
-        Boolean(getCampaignMediaUrl(item))
-      );
+    const reviewItems = queue.filter((item) =>
+      ['campaign_media', 'image', 'flyer', 'sponsor_logo'].includes(
+        String(item.media_type || '').toLowerCase()
+      )
+    );
 
+    const queueWithMedia = reviewItems.filter((item) =>
+      Boolean(getCampaignMediaUrl(item))
+    );
       setItems(queueWithMedia);
 
       setSelectedItem((current) => {
