@@ -269,7 +269,6 @@ export default function EventDetailPage() {
 
 return (
   toAbsoluteMediaUrl(event.hero_image_url) ||
-  officialFlyerImage ||
   toAbsoluteMediaUrl(event.image_url) ||
   toAbsoluteMediaUrl(event.media_url) ||
   campaignMediaImage
@@ -278,7 +277,6 @@ return (
 
     const displayImage =
       heroImage ||
-      officialFlyerImage ||
       campaignMediaImage ||
       fallbackImage;
 
