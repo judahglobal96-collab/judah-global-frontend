@@ -98,10 +98,21 @@ export default function OrgSubmitEventBasicsPage() {
       const formData = new FormData();
       formData.append("media", mediaFile);
 
+      const token =
+        localStorage.getItem("auth_token") ||
+        localStorage.getItem("token");
+
+        if (!token) {
+          throw new Error("Missing auth token. Please log in again.");
+        }
       const response = await fetch(
+        
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/events/${eventId}/media`,
         {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           body: formData,
         }
       );
