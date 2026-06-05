@@ -267,20 +267,20 @@ export default function EventDetailPage() {
   const heroImage = useMemo(() => {
     if (!event) return "";
 
-    return (
-      toAbsoluteMediaUrl(event.hero_image_url) ||
-      campaignMediaImage ||
-      officialFlyerImage ||
-      toAbsoluteMediaUrl(event.image_url) ||
-      toAbsoluteMediaUrl(event.media_url)
-    );
+return (
+  toAbsoluteMediaUrl(event.hero_image_url) ||
+  officialFlyerImage ||
+  toAbsoluteMediaUrl(event.image_url) ||
+  toAbsoluteMediaUrl(event.media_url) ||
+  campaignMediaImage
+);
   }, [event, campaignMediaImage, officialFlyerImage]);
 
-      const displayImage =
-        heroImage ||
-        campaignMediaImage ||
-        officialFlyerImage ||
-        fallbackImage;
+    const displayImage =
+      heroImage ||
+      officialFlyerImage ||
+      campaignMediaImage ||
+      fallbackImage;
 
   const shouldShowOfficialFlyer = Boolean(officialFlyerImage);
 
