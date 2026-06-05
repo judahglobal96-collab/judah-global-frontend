@@ -273,7 +273,7 @@ return (
   toAbsoluteMediaUrl(event.media_url) ||
   campaignMediaImage
 );
-  }, [event, campaignMediaImage, officialFlyerImage]);
+  }, [event, campaignMediaImage]);
 
     const displayImage =
       heroImage ||
