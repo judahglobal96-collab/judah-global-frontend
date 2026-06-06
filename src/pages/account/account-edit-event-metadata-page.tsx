@@ -57,6 +57,19 @@ function normalizeTime(value?: string | null) {
   if (!value) return "";
   return String(value).slice(0, 5);
 }
+function isEventExpired(event: any) {
+  if (event.ends_at_utc) {
+    return new Date(event.ends_at_utc) <= new Date();
+  }
+
+  const fallbackDate = event.end_date || event.start_date;
+
+  if (!fallbackDate) return false;
+
+  const endOfEventDay = new Date(`${String(fallbackDate).slice(0, 10)}T23:59:59`);
+
+  return endOfEventDay <= new Date();
+}
 
 export default function AccountEditEventMetadataPage() {
   const { eventId } = useParams();
@@ -104,9 +117,7 @@ export default function AccountEditEventMetadataPage() {
 
         if (!isMounted) return;
 
-        const expired = Boolean(
-          event.ends_at_utc && new Date(event.ends_at_utc) <= new Date()
-        );
+        const expired = isEventExpired(event);
 
         setIsExpired(expired);
 
