@@ -88,7 +88,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "account/events/:eventId/edit-metadata",
+        path: "account/events/:eventId/metadata",
         element: (
           <ProtectedRoute>
             <AccountEditEventMetadataPage />
