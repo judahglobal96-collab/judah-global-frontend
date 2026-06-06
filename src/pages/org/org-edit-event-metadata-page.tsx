@@ -52,7 +52,19 @@ function normalizeTime(value?: string | null) {
   if (!value) return "";
   return String(value).slice(0, 5);
 }
+function isEventExpired(event: any) {
+  if (event.ends_at_utc) {
+    return new Date(event.ends_at_utc) <= new Date();
+  }
 
+  const fallbackDate = event.end_date || event.start_date;
+
+  if (!fallbackDate) return false;
+
+  const endOfEventDay = new Date(`${String(fallbackDate).slice(0, 10)}T23:59:59`);
+
+  return endOfEventDay <= new Date();
+}
 export default function OrgEditEventMetadataPage() {
   const { orgUuid, eventId } = useParams();
   const navigate = useNavigate();
@@ -62,6 +74,8 @@ export default function OrgEditEventMetadataPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -100,6 +114,9 @@ export default function OrgEditEventMetadataPage() {
         const event = data?.event || {};
 
         if (!isMounted) return;
+
+        const expired = isEventExpired(event);
+        setIsExpired(expired);
 
         setForm({
           title: event.title || "",
@@ -296,17 +313,52 @@ export default function OrgEditEventMetadataPage() {
           gap: "22px",
         }}
       >
+         {isExpired && (
+          <div
+            style={{
+              background: "rgba(200,169,107,0.12)",
+              border: "1px solid rgba(200,169,107,0.45)",
+              color: "#c8a96b",
+              padding: "14px 16px",
+              borderRadius: 12,
+              marginBottom: 18,
+              fontWeight: 600,
+              textAlign: "center",
+            }}
+          >
+            This event has expired. Schedule fields are locked and cannot be changed
+            from standard metadata editing.
+          </div>
+        )}
+
+        {isExpired && (
+  <div
+    style={{
+      background: "rgba(200,169,107,0.12)",
+      border: "1px solid rgba(200,169,107,0.45)",
+      color: "#c8a96b",
+      padding: "14px 16px",
+      borderRadius: 12,
+      marginBottom: 18,
+      fontWeight: 600,
+      textAlign: "center",
+    }}
+  >
+    This event has expired. Schedule fields are locked and cannot be changed
+    from standard metadata editing.
+  </div>
+)}
         <FieldGroup title="Core Event Details">
           <TextInput label="Event Title" value={form.title} onChange={(v) => updateField("title", v)} required />
           <TextInput label="Event Type" value={form.event_type} onChange={(v) => updateField("event_type", v)} required />
           <TextArea label="Description" value={form.description} onChange={(v) => updateField("description", v)} required />
         </FieldGroup>
 
-        <FieldGroup title="Schedule">
-          <TextInput label="Start Date" type="date" value={form.start_date} onChange={(v) => updateField("start_date", v)} required />
-          <TextInput label="End Date" type="date" value={form.end_date} onChange={(v) => updateField("end_date", v)} />
-          <TextInput label="Start Time" type="time" value={form.start_time} onChange={(v) => updateField("start_time", v)} required />
-          <TextInput label="End Time" type="time" value={form.end_time} onChange={(v) => updateField("end_time", v)} />
+          <FieldGroup title={isExpired ? "Schedule — Locked" : "Schedule"}>
+          <TextInput label="Start Date" type="date" value={form.start_date} disabled={isExpired} onChange={(v) => updateField("start_date", v)} required />
+          <TextInput label="End Date" type="date" value={form.end_date} disabled={isExpired} onChange={(v) => updateField("end_date", v)} />
+          <TextInput label="Start Time" type="time" value={form.start_time} disabled={isExpired} onChange={(v) => updateField("start_time", v)} required />
+          <TextInput label="End Time" type="time" value={form.end_time} disabled={isExpired} onChange={(v) => updateField("end_time", v)} />
           <SelectInput
             label="Timezone"
             value={form.timezone}
@@ -421,12 +473,14 @@ function TextInput({
   onChange,
   type = "text",
   required = false,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label style={{ display: "grid", gap: 7 }}>
@@ -437,16 +491,18 @@ function TextInput({
         type={type}
         value={value}
         required={required}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         style={{
           width: "100%",
           boxSizing: "border-box",
           borderRadius: 12,
-          border: "1px solid rgba(255,255,255,0.14)",
-          background: "rgba(255,255,255,0.06)",
-          color: "#fffaf0",
+          border: "1px solid rgba(255,255,255,0.12)",
+          background: disabled ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.08)",
+          color: disabled ? "rgba(245,241,232,0.45)" : "#f5f1e8",
           padding: "12px 14px",
           outline: "none",
+          cursor: disabled ? "not-allowed" : "text",
         }}
       />
     </label>
@@ -496,12 +552,14 @@ function SelectInput({
   onChange,
   options,
   required = false,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label style={{ display: "grid", gap: 7 }}>
@@ -511,6 +569,7 @@ function SelectInput({
       <select
         value={value}
         required={required}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         style={{
           width: "100%",
@@ -521,6 +580,8 @@ function SelectInput({
           color: "#fffaf0",
           padding: "12px 14px",
           outline: "none",
+          cursor: disabled ? "not-allowed" : "text",
+
         }}
       >
         {options.map((option) => (

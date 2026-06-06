@@ -286,7 +286,7 @@ export default function AccountEditEventMetadataPage() {
           }}
         >
           This event has expired. Schedule fields are locked and cannot be changed. To run this
-          event again, create a new event or use the approved promotion/reactivation flow.
+          event again, create a new event.
         </div>
       )}
 
