@@ -14,20 +14,20 @@ export default function OrgUploadMediaPage() {
 
   const mediaGuidelines: MediaGuideline[] = [
     {
-      title: "Use event-relevant visuals",
+      title: "Use event-relevant media visuals",
       text: "Upload flyers, promotional graphics, or approved event images that clearly represent the event being submitted.",
     },
     {
-      title: "Keep content platform-appropriate",
-      text: "All uploaded media should align with Judah Global review standards before it can appear publicly.",
+      title: "Use Promo Media Strategically",
+      text: "You have upload up to 5 media image. Each promo (Hero, homepage Top Row, Discovery Top Row & Major Events) require media image.",
     },
     {
-      title: "Prioritize readable designs",
-      text: "Graphics should be clear, legible, and visually strong enough to support public discovery and event promotion.",
+      title: "You Choose Your Event Branding",
+      text: "Upload media images for greatest visibility and impact. We recommend to always select (featured badge) for priority sorting.",
     },
     {
-      title: "Prepare for admin review",
-      text: "Uploaded event images will move through moderation and approval before they are displayed live.",
+      title: "Uploaded Media Images Cannot be Swapped or Replaced",
+      text: "Replacing uploaded media is not available in this version so ensure your images are correctly placed.",
     },
   ];
 
