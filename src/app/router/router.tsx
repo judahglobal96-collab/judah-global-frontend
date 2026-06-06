@@ -178,7 +178,7 @@ const router = createBrowserRouter([
       { path: "submit-event", element: <OrgSubmitEventPage /> },
       { path: "promote-event", element: <OrgPromoteEventPage /> },
       { path: "approved-events", element: <OrgApprovedEventsPage /> },
-      { path: "events/:eventId/edit-metadata", element: <OrgEditEventMetadataPage /> },
+      { path: "events/:eventId/metadata", element: <OrgEditEventMetadataPage /> },
       { path: "build-presence", element: <OrgBuildPresencePage /> },
       { path: "upload-media", element: <OrgUploadMediaPage /> },
       { path: "submit-event/basics", element: <OrgSubmitEventBasicsPage /> },
