@@ -85,7 +85,7 @@ function App() {
           <Route path="submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
           <Route path="upload-media" element={<OrgUploadMediaPage />} />
           <Route path="promote-event" element={<OrgPromoteEventPage />} />
-          <Route path="events/:eventId/edit-metadata" element={<OrgEditEventMetadataPage />} />
+          <Route path="events/:eventId/metadata" element={<OrgEditEventMetadataPage />} />
           <Route path="media-placement-guide" element={<MediaPlacementGuide />} />
         </Route>
 
