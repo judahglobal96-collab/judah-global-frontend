@@ -67,6 +67,7 @@ export default function AccountEditEventMetadataPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -84,17 +85,14 @@ export default function AccountEditEventMetadataPage() {
 
         const token = localStorage.getItem("auth_token");
 
-        const response = await fetch(
-          `${API_BASE_URL}/api/v1/account/events/${eventId}/edit`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/v1/account/events/${eventId}/edit`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          credentials: "include",
+        });
 
         const data = await response.json().catch(() => ({}));
 
@@ -105,6 +103,12 @@ export default function AccountEditEventMetadataPage() {
         const event = data?.event || {};
 
         if (!isMounted) return;
+
+        const expired = Boolean(
+          event.ends_at_utc && new Date(event.ends_at_utc) <= new Date()
+        );
+
+        setIsExpired(expired);
 
         setForm({
           title: event.title || "",
@@ -146,6 +150,7 @@ export default function AccountEditEventMetadataPage() {
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+
     if (!eventId) return;
 
     try {
@@ -155,18 +160,32 @@ export default function AccountEditEventMetadataPage() {
 
       const token = localStorage.getItem("auth_token");
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/account/events/${eventId}/metadata`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-          credentials: "include",
-          body: JSON.stringify(form),
-        }
-      );
+      const payload = isExpired
+        ? {
+            title: form.title,
+            description: form.description,
+            event_type: form.event_type,
+            venue_name: form.venue_name,
+            address_line_1: form.address_line_1,
+            city: form.city,
+            state_region: form.state_region,
+            country: form.country,
+            country_code: form.country_code,
+            is_virtual: form.is_virtual,
+            sponsor_name: form.sponsor_name,
+            contact_email: form.contact_email,
+          }
+        : form;
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/account/events/${eventId}/metadata`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
 
       const data = await response.json().catch(() => ({}));
 
@@ -231,8 +250,8 @@ export default function AccountEditEventMetadataPage() {
             lineHeight: 1.7,
           }}
         >
-          Update event details only. Media, flyers, logos, and promo creatives are not editable in
-          this release. Approved or rejected events return to pending review after saving.
+          Update event details only. Media, flyers, logos, and promo creatives are not editable
+          in this release. Approved or rejected events return to pending review after saving.
         </p>
 
         <div style={{ marginTop: 18 }}>
@@ -241,6 +260,24 @@ export default function AccountEditEventMetadataPage() {
           </button>
         </div>
       </section>
+
+      {isExpired && (
+        <div
+          style={{
+            border: "1px solid rgba(202,138,4,0.35)",
+            background: "#fffbeb",
+            color: "#7a4f01",
+            borderRadius: 16,
+            padding: 16,
+            marginBottom: 18,
+            fontWeight: 800,
+            lineHeight: 1.6,
+          }}
+        >
+          This event has expired. Schedule fields are locked and cannot be changed. To run this
+          event again, create a new event or use the approved promotion/reactivation flow.
+        </div>
+      )}
 
       {error && (
         <div
@@ -293,15 +330,46 @@ export default function AccountEditEventMetadataPage() {
         </FieldGroup>
 
         <FieldGroup title="Schedule">
-          <TextInput label="Start Date" type="date" value={form.start_date} onChange={(v) => updateField("start_date", v)} required />
-          <TextInput label="End Date" type="date" value={form.end_date} onChange={(v) => updateField("end_date", v)} />
-          <TextInput label="Start Time" type="time" value={form.start_time} onChange={(v) => updateField("start_time", v)} required />
-          <TextInput label="End Time" type="time" value={form.end_time} onChange={(v) => updateField("end_time", v)} />
+          <TextInput
+            label="Start Date"
+            type="date"
+            value={form.start_date}
+            onChange={(v) => updateField("start_date", v)}
+            required
+            disabled={isExpired}
+          />
+
+          <TextInput
+            label="End Date"
+            type="date"
+            value={form.end_date}
+            onChange={(v) => updateField("end_date", v)}
+            disabled={isExpired}
+          />
+
+          <TextInput
+            label="Start Time"
+            type="time"
+            value={form.start_time}
+            onChange={(v) => updateField("start_time", v)}
+            required
+            disabled={isExpired}
+          />
+
+          <TextInput
+            label="End Time"
+            type="time"
+            value={form.end_time}
+            onChange={(v) => updateField("end_time", v)}
+            disabled={isExpired}
+          />
+
           <SelectInput
             label="Timezone"
             value={form.timezone}
             onChange={(v) => updateField("timezone", v)}
             required
+            disabled={isExpired}
             options={[
               "",
               "America/New_York",
@@ -398,17 +466,31 @@ function TextInput({
   onChange,
   type = "text",
   required = false,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label style={{ display: "grid", gap: 7 }}>
       <span style={{ fontSize: 13, color: "#334155", fontWeight: 800 }}>{label}</span>
-      <input type={type} value={value} required={required} onChange={(e) => onChange(e.target.value)} style={inputStyle} />
+      <input
+        type={type}
+        value={value}
+        required={required}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          ...inputStyle,
+          background: disabled ? "#f1f5f9" : "#ffffff",
+          color: disabled ? "#64748b" : pageText,
+          cursor: disabled ? "not-allowed" : "text",
+        }}
+      />
     </label>
   );
 }
@@ -444,17 +526,30 @@ function SelectInput({
   onChange,
   options,
   required = false,
+  disabled = false,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   options: string[];
   required?: boolean;
+  disabled?: boolean;
 }) {
   return (
     <label style={{ display: "grid", gap: 7 }}>
       <span style={{ fontSize: 13, color: "#334155", fontWeight: 800 }}>{label}</span>
-      <select value={value} required={required} onChange={(e) => onChange(e.target.value)} style={inputStyle}>
+      <select
+        value={value}
+        required={required}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          ...inputStyle,
+          background: disabled ? "#f1f5f9" : "#ffffff",
+          color: disabled ? "#64748b" : pageText,
+          cursor: disabled ? "not-allowed" : "pointer",
+        }}
+      >
         {options.map((option) => (
           <option key={option || "blank"} value={option}>
             {option || "Select timezone"}
