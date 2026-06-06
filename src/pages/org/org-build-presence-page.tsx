@@ -23,11 +23,11 @@ export default function OrgBuildPresencePage() {
     },
     {
       title: "Regional Zones Control Placement",
-      text: "All regional zones default to USA. You must select other regional zone to expand your outreach.",
+      text: "All regional zones default to USA. You must select other regional zone to expand your outreach. All your selected promos should correspond to the region you selected.",
     },
     {
       title: "Campaign Builder Plus+",
-      text: "Avaialable dates and many options to build your brand strategy and control your cost. You can be creative and use a combination of promo types.",
+      text: "Avaialable dates and many options to build your brand strategy and control your cost. You can be creative and use a combination of promo types; i.e. combine Major Events with featured badge and Homepage Top Row. Major events will give you 21-days, homepage top-row 7 days and featured badge as long as the event is active. That's a lot of exposure.",
     },
     {
       title: "Campaign Builder Recurring Dates",
