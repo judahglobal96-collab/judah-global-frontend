@@ -615,7 +615,7 @@ export default function OrgApprovedEventsPage() {
                           <button
                             type="button"
                             onClick={() =>
-                              navigate(`/org/${orgUuid}/events/${event.id}/edit-metadata`)
+                              navigate(`/org/${orgUuid}/events/${event.id}/metadata`)
                             }
                             style={buttonSecondaryDark}
                           >

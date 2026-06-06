@@ -85,7 +85,7 @@ function App() {
           <Route path="submit-event/verify" element={<OrgSubmitEventVerifyPage />} />
           <Route path="upload-media" element={<OrgUploadMediaPage />} />
           <Route path="promote-event" element={<OrgPromoteEventPage />} />
-          <Route path="edit-event/:eventId" element={<OrgEditEventMetadataPage />} />
+          <Route path="event/:eventId" element={<OrgEditEventMetadataPage />} />
           <Route path="media-placement-guide" element={<MediaPlacementGuide />} />
         </Route>
 
@@ -166,7 +166,7 @@ function App() {
             }
           />
           <Route
-            path="/account/events/:eventId/edit-metadata"
+            path="/account/events/:eventId/metadata"
             element={
               <ProtectedRoute>
                 <AccountEditEventMetadataPage />
