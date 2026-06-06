@@ -14,21 +14,26 @@ export default function OrgBuildPresencePage() {
 
   const presenceFeatures: PresenceFeature[] = [
     {
-      title: "Organization Identity",
-      text: "Strengthen how your ministry or organization is represented across Judah Global with a more complete public presence.",
+      title: "Regional Zones",
+      text: "Judah Global is build around (4) Regional Zone: USA, CANADA, UNITED KINGDOM, AFRICA.",
     },
     {
-      title: "Branded Visibility",
-      text: "Support stronger recognition through organization-linked events, consistent naming, and future profile enhancements.",
+      title: "Campaign Builder",
+      text: "Each Regional Zone is controlled within the Campaign Builder (top section).",
     },
     {
-      title: "Trust & Credibility",
-      text: "Establish a clearer and more credible public-facing footprint as your organization becomes more active on the platform.",
+      title: "Regional Zones Control Placement",
+      text: "All regional zones default to USA. You must select other regional zone to expand your outreach.",
     },
     {
-      title: "Future Profile Expansion",
-      text: "Prepare for future tools such as organization media, profile details, featured placement, and branded event promotion.",
+      title: "Campaign Builder Plus+",
+      text: "Avaialable dates and many options to build your brand strategy and control your cost. You can be creative and use a combination of promo types.",
     },
+    {
+      title: "Campaign Builder Recurring Dates",
+      text: "This is an awesome tool if you have recurring event dates. Scroll to the bottom of the Campaign Builder and select (1) start date and numbers of weeks. i.e. July 4, 2026 x 6 weeks. Campaign Builder will load all 6 weeks of events for your review.",
+    },
+
   ];
 
   return (
