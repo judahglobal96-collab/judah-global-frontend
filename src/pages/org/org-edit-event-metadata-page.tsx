@@ -330,24 +330,7 @@ export default function OrgEditEventMetadataPage() {
             from standard metadata editing.
           </div>
         )}
-
-        {isExpired && (
-  <div
-    style={{
-      background: "rgba(200,169,107,0.12)",
-      border: "1px solid rgba(200,169,107,0.45)",
-      color: "#c8a96b",
-      padding: "14px 16px",
-      borderRadius: 12,
-      marginBottom: 18,
-      fontWeight: 600,
-      textAlign: "center",
-    }}
-  >
-    This event has expired. Schedule fields are locked and cannot be changed
-    from standard metadata editing.
-  </div>
-)}
+)
         <FieldGroup title="Core Event Details">
           <TextInput label="Event Title" value={form.title} onChange={(v) => updateField("title", v)} required />
           <TextInput label="Event Type" value={form.event_type} onChange={(v) => updateField("event_type", v)} required />
