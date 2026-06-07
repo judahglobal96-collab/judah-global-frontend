@@ -33,6 +33,11 @@ type EventDetail = {
   is_featured?: boolean;
   is_virtual?: boolean;
 
+  website_url?: string;
+  websiteUrl?: string;
+  sponsor?: {
+    websiteUrl?: string;
+  };
   hero_image_url?: string;
   campaign_media_url?: string;
   image_url?: string;
@@ -648,6 +653,31 @@ return (
               <span style={{ color: "#475569", lineHeight: 1.6 }}>
                 {event.contact_email || "N/A"}
               </span>
+            </DetailInfoCard>
+
+            <DetailInfoCard label="Sponsor Website">
+              {event.website_url || event.websiteUrl || event.sponsor?.websiteUrl ? (
+                <a
+                  href={
+                    event.website_url ||
+                    event.websiteUrl ||
+                    event.sponsor?.websiteUrl
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: "#334155",
+                    fontWeight: 600,
+                    textDecoration: "underline",
+                  }}
+                >
+                  Visit Website
+                </a>
+              ) : (
+                <span style={{ color: "#475569", lineHeight: 1.6 }}>
+                  N/A
+                </span>
+              )}
             </DetailInfoCard>
 
             <DetailInfoCard label="Virtual Event">
