@@ -6,6 +6,7 @@ type PlacementGuideItem = {
   name: string;
   location: string;
   recommendedSize: string;
+  displaySize: string;
   aspectRatio: string;
   formats: string;
   bestFor: string;
@@ -19,6 +20,7 @@ const PLACEMENTS: PlacementGuideItem[] = [
     name: "Homepage Hero",
     location: "Top featured area of the Judah Global homepage.",
     recommendedSize: "1920 × 900 px",
+    displaySize: "Full-width responsive hero area",
     aspectRatio: "Wide landscape",
     formats: "JPG, PNG, WebP",
     bestFor: "Major conferences, revivals, tours, and high-priority promotions.",
@@ -30,6 +32,7 @@ const PLACEMENTS: PlacementGuideItem[] = [
     name: "Homepage Top Row",
     location: "Premium top-row promotional section on the homepage.",
     recommendedSize: "1200 × 800 px",
+    displaySize: "Responsive promo card",
     aspectRatio: "3:2 landscape",
     formats: "JPG, PNG, WebP",
     bestFor: "Strong event promotions, ministry campaigns, and featured announcements.",
@@ -41,6 +44,7 @@ const PLACEMENTS: PlacementGuideItem[] = [
     name: "Discovery Top Row",
     location: "Top promotional row on the event discovery page.",
     recommendedSize: "1200 × 800 px",
+    displaySize: "Responsive discovery promo card",
     aspectRatio: "3:2 landscape",
     formats: "JPG, PNG, WebP",
     bestFor: "Events that need stronger visibility during browsing and search.",
@@ -52,6 +56,7 @@ const PLACEMENTS: PlacementGuideItem[] = [
     name: "Major Events",
     location: "Major Events promotional area for high-priority listings.",
     recommendedSize: "1400 × 900 px",
+    displaySize: "Responsive major event card",
     aspectRatio: "Large landscape",
     formats: "JPG, PNG, WebP",
     bestFor: "Regional, national, or large-scale faith events.",
@@ -60,9 +65,22 @@ const PLACEMENTS: PlacementGuideItem[] = [
   },
   {
     category: "Event Detail Placement",
+    name: "Event Detail Hero Image",
+    location: "Main image on the public event detail page.",
+    recommendedSize: "1920 × 1080 px",
+    displaySize: "~542 × 320 px desktop, responsive on smaller screens",
+    aspectRatio: "16:9 landscape",
+    formats: "JPG, PNG, WebP",
+    bestFor: "Primary event artwork shown beside the event description.",
+    note: "Images are displayed with object-fit: cover. Non-16:9 artwork may be cropped.",
+    mockupShape: "hero",
+  },
+  {
+    category: "Event Detail Placement",
     name: "Event Official Flyer",
     location: "Event Official flyer appears on the event detail page.",
     recommendedSize: "1080 × 1920 px",
+    displaySize: "Vertical flyer preview, responsive",
     aspectRatio: "9:16 vertical",
     formats: "JPG, PNG, WebP",
     bestFor: "Full event flyers, posters, speaker graphics, and schedule flyers.",
@@ -72,8 +90,9 @@ const PLACEMENTS: PlacementGuideItem[] = [
   {
     category: "Event Detail Placement",
     name: "Featured Badge",
-    location: "Get discovered faster, spotlight tier, priority ranking in search discovery",
+    location: "Get discovered faster, spotlight tier, priority ranking in search discovery.",
     recommendedSize: "No separate image required",
+    displaySize: "Badge overlay / priority marker",
     aspectRatio: "Uses existing event media",
     formats: "N/A",
     bestFor: "Adding visual priority and trust to an existing event listing.",
@@ -213,9 +232,11 @@ export default function MediaPlacementGuidePage() {
             fontSize: 13,
             letterSpacing: "0.08em",
             textTransform: "uppercase",
+            textAlign: "center",
+            padding: 12,
           }}
         >
-          Homepage Hero
+          Hero Image
         </div>
       );
     }
@@ -319,20 +340,19 @@ export default function MediaPlacementGuidePage() {
       <div style={containerStyle}>
         <section style={heroStyle}>
           <div style={topMetaStyle}>Judah Global Media Guide</div>
-
           <h1 style={pageTitleStyle}>Media Placement Guide</h1>
-
           <p style={pageDescStyle}>
             Use this guide to prepare your promotional media before uploading it
             in the Campaign Builder. This page shows where each placement appears
-            across Judah Global and the recommended image sizes for best display
-            quality.
+            across Judah Global, the recommended image sizes, and the current
+            display container behavior for best display quality.
           </p>
 
           <div style={infoBoxStyle}>
             This page is informational only. Final placement availability,
             pricing, media upload, and checkout are handled inside Campaign
-            Builder.
+            Builder. Images may be cropped when the uploaded aspect ratio does
+            not match the display container.
           </div>
 
           <div
@@ -364,7 +384,9 @@ export default function MediaPlacementGuidePage() {
         <section style={gridStyle}>
           {PLACEMENTS.map((placement) => (
             <article key={placement.name} style={cardStyle}>
-              <div style={mockShellStyle}>{renderMockup(placement.mockupShape)}</div>
+              <div style={mockShellStyle}>
+                {renderMockup(placement.mockupShape)}
+              </div>
 
               <div style={topMetaStyle}>{placement.category}</div>
 
@@ -404,6 +426,7 @@ export default function MediaPlacementGuidePage() {
                 }}
               >
                 <GuideRow label="Recommended Size" value={placement.recommendedSize} />
+                <GuideRow label="Display Size" value={placement.displaySize} />
                 <GuideRow label="Aspect Ratio" value={placement.aspectRatio} />
                 <GuideRow label="Accepted Formats" value={placement.formats} />
               </div>
@@ -506,7 +529,6 @@ function GuideRow({ label, value }: { label: string; value: string }) {
       >
         {label}
       </span>
-
       <span
         style={{
           color: "#101828",
