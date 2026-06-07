@@ -778,8 +778,8 @@ export default function EventsDiscoveryPage() {
             style={{
               display: "grid",
               gap: 22,
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 360px))",
-              justifyContent: "center",
+              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+              justifyContent: "stretch",
               alignItems: "start",
             }}
           >
