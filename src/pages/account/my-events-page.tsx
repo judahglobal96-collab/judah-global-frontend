@@ -355,7 +355,7 @@ export default function MyEventsPage() {
                         title={isExpired ? "Event has ended. Use Promote Event to reactivate." : ""}
                         onClick={() => {
                           if (isExpired) return;
-                          navigate(`/account/events/${event.id}/edit-metadata`);
+                          navigate(`/account/events/${event.id}/metadata`);
                         }}
                         style={{
                           ...buttonSecondary,
