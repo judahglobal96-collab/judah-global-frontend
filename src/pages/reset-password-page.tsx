@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginPlatformUser, storeAuthToken } from "../services/auth.api";
+import { resetPassword } from "../services/auth.api";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -34,13 +34,14 @@ const primaryButtonStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const params = new URLSearchParams(window.location.search);
-  const redirect = params.get("redirect") || "/dashboard";
+  const token = params.get("token") || "";
 
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,32 +49,45 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setMessage("");
+
+    if (!token) {
+      setError("Invalid or missing password reset token.");
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const res = await loginPlatformUser({
-        email,
+      const res = await resetPassword({
+        token,
         password,
       });
 
-      if (res?.requiresOtp) {
-        sessionStorage.setItem("auth_email", email);
-        sessionStorage.setItem("auth_redirect", redirect);
-        navigate(`/verify-otp?redirect=${encodeURIComponent(redirect)}`);
+      if (res?.success === false) {
+        setError(res?.message || "Password reset failed.");
         return;
       }
 
-      const token = res?.token || res?.accessToken;
+      setMessage("Your password has been updated. Redirecting to login...");
 
-      if (token) {
-        storeAuthToken(token);
-        navigate(redirect);
-        return;
-      }
-
-      setError(res?.message || "Login failed.");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Login error.");
+      console.error("Reset password error:", err);
+      setError("Unable to reset password. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -104,7 +118,7 @@ export default function LoginPage() {
             fontWeight: 800,
           }}
         >
-          Welcome back
+          Create new password
         </h1>
 
         <p
@@ -115,51 +129,51 @@ export default function LoginPage() {
             lineHeight: 1.6,
           }}
         >
-          Sign in to access your Judah Global account.
+          Enter and confirm your new password below.
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 16 }}>
-          <label style={labelStyle}>Email</label>
+          <label style={labelStyle}>New Password</label>
           <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="password"
+            placeholder="Enter new password"
+            value={password}
+            required
+            onChange={(e) => setPassword(e.target.value)}
             style={inputStyle}
           />
         </div>
 
         <div style={{ marginBottom: 18 }}>
-          <label style={labelStyle}>Password</label>
+          <label style={labelStyle}>Confirm Password</label>
           <input
             type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Confirm new password"
+            value={confirmPassword}
+            required
+            onChange={(e) => setConfirmPassword(e.target.value)}
             style={inputStyle}
           />
+        </div>
 
+        {message && (
           <div
             style={{
-              marginTop: 8,
-              textAlign: "right",
+              marginBottom: 16,
+              padding: "12px 14px",
+              borderRadius: 12,
+              background: "#ecfdf5",
+              border: "1px solid #bbf7d0",
+              color: "#166534",
+              fontSize: 14,
+              fontWeight: 600,
             }}
           >
-            <a
-              href="/forgot-password"
-              style={{
-                fontSize: 14,
-                color: "#9A7A21",
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
-            >
-              Forgot Password?
-            </a>
+            {message}
           </div>
-        </div>
+        )}
 
         {error && (
           <div
@@ -186,7 +200,7 @@ export default function LoginPage() {
             opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? "Signing in..." : "Login"}
+          {loading ? "Updating..." : "Update Password"}
         </button>
       </form>
 
@@ -198,18 +212,15 @@ export default function LoginPage() {
           fontSize: 15,
         }}
       >
-        New to Judah Global?{" "}
         <a
-          href={`https://app.judahglobal.org/signup${
-            redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""
-          }`}
+          href="/login"
           style={{
             color: "#0f172a",
             fontWeight: 700,
             textDecoration: "none",
           }}
         >
-          Create an account
+          Back to login
         </a>
       </div>
     </div>

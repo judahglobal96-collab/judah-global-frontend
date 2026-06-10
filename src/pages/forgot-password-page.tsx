@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { loginPlatformUser, storeAuthToken } from "../services/auth.api";
+import { requestPasswordReset } from "../services/auth.api";
 
 const inputStyle: React.CSSProperties = {
   width: "100%",
@@ -34,13 +33,9 @@ const primaryButtonStyle: React.CSSProperties = {
   cursor: "pointer",
 };
 
-export default function LoginPage() {
-  const navigate = useNavigate();
-  const params = new URLSearchParams(window.location.search);
-  const redirect = params.get("redirect") || "/dashboard";
-
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,32 +43,18 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setMessage("");
 
     try {
-      const res = await loginPlatformUser({
-        email,
-        password,
-      });
+      await requestPasswordReset({ email });
 
-      if (res?.requiresOtp) {
-        sessionStorage.setItem("auth_email", email);
-        sessionStorage.setItem("auth_redirect", redirect);
-        navigate(`/verify-otp?redirect=${encodeURIComponent(redirect)}`);
-        return;
-      }
-
-      const token = res?.token || res?.accessToken;
-
-      if (token) {
-        storeAuthToken(token);
-        navigate(redirect);
-        return;
-      }
-
-      setError(res?.message || "Login failed.");
+      setMessage(
+        "If an account exists for that email, a password reset link has been sent."
+      );
+      setEmail("");
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Login error.");
+      console.error("Forgot password error:", err);
+      setError("Unable to request password reset. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -104,7 +85,7 @@ export default function LoginPage() {
             fontWeight: 800,
           }}
         >
-          Welcome back
+          Reset password
         </h1>
 
         <p
@@ -115,51 +96,39 @@ export default function LoginPage() {
             lineHeight: 1.6,
           }}
         >
-          Sign in to access your Judah Global account.
+          Enter your email and we’ll send you a secure password reset link.
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 18 }}>
           <label style={labelStyle}>Email</label>
           <input
             type="email"
             placeholder="Enter your email"
             value={email}
+            required
             onChange={(e) => setEmail(e.target.value)}
             style={inputStyle}
           />
         </div>
 
-        <div style={{ marginBottom: 18 }}>
-          <label style={labelStyle}>Password</label>
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={inputStyle}
-          />
-
+        {message && (
           <div
             style={{
-              marginTop: 8,
-              textAlign: "right",
+              marginBottom: 16,
+              padding: "12px 14px",
+              borderRadius: 12,
+              background: "#ecfdf5",
+              border: "1px solid #bbf7d0",
+              color: "#166534",
+              fontSize: 14,
+              fontWeight: 600,
             }}
           >
-            <a
-              href="/forgot-password"
-              style={{
-                fontSize: 14,
-                color: "#9A7A21",
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
-            >
-              Forgot Password?
-            </a>
+            {message}
           </div>
-        </div>
+        )}
 
         {error && (
           <div
@@ -186,7 +155,7 @@ export default function LoginPage() {
             opacity: loading ? 0.7 : 1,
           }}
         >
-          {loading ? "Signing in..." : "Login"}
+          {loading ? "Sending..." : "Send Reset Link"}
         </button>
       </form>
 
@@ -198,18 +167,16 @@ export default function LoginPage() {
           fontSize: 15,
         }}
       >
-        New to Judah Global?{" "}
+        Remember your password?{" "}
         <a
-          href={`https://app.judahglobal.org/signup${
-            redirect ? `?redirect=${encodeURIComponent(redirect)}` : ""
-          }`}
+          href="/login"
           style={{
             color: "#0f172a",
             fontWeight: 700,
             textDecoration: "none",
           }}
         >
-          Create an account
+          Back to login
         </a>
       </div>
     </div>

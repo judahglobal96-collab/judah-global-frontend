@@ -17,6 +17,8 @@ import LoginPage from "./pages/login-page";
 import SignupPage from "./pages/signup-page";
 import VerifyOtpPage from "./pages/verify-otp-page";
 import ProfilePage from "./pages/profile-page";
+import ForgotPasswordPage from "./pages/forgot-password-page";
+import ResetPasswordPage from "./pages/reset-password-page";
 import EditProfilePage from "./pages/edit-profile-page";
 
 import MyEventsPage from "./pages/account/my-events-page";
@@ -120,6 +122,14 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
+          <Route
+            path="/forgot-password"
+            element={<ForgotPasswordPage />}
+          />
+          <Route
+            path="/reset-password"
+            element={<ResetPasswordPage />}
+          />
         </Route>
 
         {/* Public */}
