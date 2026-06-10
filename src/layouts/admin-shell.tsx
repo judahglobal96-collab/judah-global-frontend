@@ -43,7 +43,7 @@ export default function AdminShell() {
             Org Accounts
           </NavLink>
 
-          <NavLink to="/admin/event-payments" style={navLinkStyle}>
+          <NavLink to="/admin/campaign-payments" style={navLinkStyle}>
             Payments
           </NavLink>
 
