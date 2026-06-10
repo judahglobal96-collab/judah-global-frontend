@@ -1,28 +1,44 @@
 import { useEffect, useState } from "react";
 import "./admin-event-payments-page.css";
 
-type Payment = {
+type CampaignPayment = {
   id: string;
-  event_code: string;
+  campaign_code?: string | null;
+  campaign_name?: string | null;
+  organization_name?: string | null;
+  organization_uuid?: string | null;
+  event_id?: string | null;
   amount: number;
-  currency: string;
-  payment_status: string;
-  payment_type: string;
-  customer_email: string;
-  created_at: string;
+  currency?: string | null;
+  payment_status?: string | null;
+  status?: string | null;
+  stripe_session_id?: string | null;
+  customer_email?: string | null;
+  created_at?: string | null;
 };
 
 export default function AdminEventPaymentsPage() {
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [payments, setPayments] = useState<CampaignPayment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const fetchPayments = async () => {
     try {
-      const res = await fetch("/api/v1/admin/event-payments");
+      setLoading(true);
+      setError("");
+
+      const res = await fetch("/api/v1/admin/campaign-payments");
+
+      if (!res.ok) {
+        throw new Error(`Failed to load campaign payments: ${res.status}`);
+      }
+
       const data = await res.json();
-      setPayments(data || []);
+
+      setPayments(Array.isArray(data) ? data : data?.payments || []);
     } catch (error) {
-      console.error("Failed to fetch payments:", error);
+      console.error("Failed to fetch campaign payments:", error);
+      setError("Failed to load campaign payments.");
     } finally {
       setLoading(false);
     }
@@ -34,49 +50,56 @@ export default function AdminEventPaymentsPage() {
 
   return (
     <div className="admin-payments-page">
-      <h1 className="page-title">Event Payments</h1>
+      <h1 className="page-title">Campaign Payments</h1>
 
       {loading ? (
-        <p>Loading payments...</p>
+        <p>Loading campaign payments...</p>
+      ) : error ? (
+        <p>{error}</p>
+      ) : payments.length === 0 ? (
+        <p>No campaign payments found.</p>
       ) : (
         <table className="payments-table">
           <thead>
             <tr>
-              <th>Event Code</th>
+              <th>Campaign Code</th>
+              <th>Campaign</th>
+              <th>Organization</th>
               <th>Amount</th>
-              <th>Type</th>
               <th>Status</th>
               <th>Email</th>
+              <th>Stripe Session</th>
+              <th>Event ID</th>
               <th>Date</th>
             </tr>
           </thead>
 
           <tbody>
-            {payments.map((p) => (
-              <tr key={p.id}>
-                <td>{p.event_code || "-"}</td>
+            {payments.map((p) => {
+              const status = p.payment_status || p.status || "-";
+              const createdAt = p.created_at ? new Date(p.created_at) : null;
 
-                <td>
-                  ${(p.amount / 100).toFixed(2)}{" "}
-                  {p.currency?.toUpperCase()}
-                </td>
-
-                <td className={`type ${p.payment_type}`}>
-                  {p.payment_type}
-                </td>
-
-                <td className={`status ${p.payment_status}`}>
-                  {p.payment_status}
-                </td>
-
-                <td>{p.customer_email || "-"}</td>
-
-                <td>
-                  {new Date(p.created_at).toLocaleDateString()}{" "}
-                  {new Date(p.created_at).toLocaleTimeString()}
-                </td>
-              </tr>
-            ))}
+              return (
+                <tr key={p.id}>
+                  <td>{p.campaign_code || "-"}</td>
+                  <td>{p.campaign_name || "-"}</td>
+                  <td>{p.organization_name || p.organization_uuid || "-"}</td>
+                  <td>
+                    ${((p.amount || 0) / 100).toFixed(2)}{" "}
+                    {p.currency?.toUpperCase() || "USD"}
+                  </td>
+                  <td className={`status ${status}`}>{status}</td>
+                  <td>{p.customer_email || "-"}</td>
+                  <td>{p.stripe_session_id || "-"}</td>
+                  <td>{p.event_id || "-"}</td>
+                  <td>
+                    {createdAt
+                      ? `${createdAt.toLocaleDateString()} ${createdAt.toLocaleTimeString()}`
+                      : "-"}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
