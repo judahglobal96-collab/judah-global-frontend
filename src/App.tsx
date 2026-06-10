@@ -107,7 +107,7 @@ function App() {
           <Route path="events/:eventId" element={<AdminEventReviewPage />} />
           <Route path="approved-events" element={<AdminApprovedEventsPage />} />
           <Route path="media-review" element={<AdminMediaReviewPage />} />
-          <Route path="/admin/campaign-payments" element={<AdminEventPaymentsPage />} />
+          <Route path="event-payments" element={<AdminEventPaymentsPage />} />
           <Route path="rejected-events" element={<AdminRejectedEventsPage />} />
           <Route path="org-accounts" element={<AdminOrgAccountsPage />} />
           <Route path="org-accounts/new" element={<AdminOrgAccountCreatePage />} />
