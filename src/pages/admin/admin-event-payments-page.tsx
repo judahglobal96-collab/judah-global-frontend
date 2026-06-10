@@ -27,7 +27,7 @@ export default function AdminEventPaymentsPage() {
       setLoading(true);
       setError("");
 
-      const res = await fetch("/api/v1/admin/event-payments");
+      const res = await fetch("/api/v1/event-payments");
 
       if (!res.ok) {
         throw new Error(`Failed to load campaign payments: ${res.status}`);
