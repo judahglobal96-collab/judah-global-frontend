@@ -74,7 +74,7 @@ export default function AdminEventPaymentsPage() {
                 <th>Email</th>
                 <th>Stripe Session</th>
                 <th>Event ID</th>
-                <th>Date</th>
+                <th>Created Date</th>
               </tr>
             </thead>
 
