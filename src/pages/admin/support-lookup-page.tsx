@@ -35,10 +35,22 @@ export default function AdminSupportLookupPage() {
       setLoading(true);
       setError("");
 
-      const response = await fetch(
-        `${API_BASE}/admin/support-lookup?q=${encodeURIComponent(trimmed)}`
-      );
+const token =
+  localStorage.getItem("auth_token") ||
+  localStorage.getItem("token");
 
+if (!token) {
+  throw new Error("Unauthorized. Missing token.");
+}
+
+const response = await fetch(
+  `${API_BASE}/admin/support-lookup?q=${encodeURIComponent(trimmed)}`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
