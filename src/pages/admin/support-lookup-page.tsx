@@ -6,6 +6,7 @@ import { Link, useSearchParams } from "react-router-dom";
 type LookupResult = {
   id: string;
   event_code?: string | null;
+  campaign_id?: string | null;
   title: string;
   event_type?: string | null;
   status?: string | null;
