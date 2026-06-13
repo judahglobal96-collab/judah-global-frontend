@@ -15,7 +15,6 @@ type ProfileUser = {
   isEmailVerified: boolean;
   lastLoginAt?: string;
   createdAt?: string;
-
   hasOrgAccount?: boolean;
   organizationId?: string | null;
   organizationUuid?: string | null;
@@ -68,6 +67,7 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const [user, setUser] = useState<ProfileUser | null>(null);
   const [error, setError] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     const token =
@@ -92,6 +92,65 @@ export default function ProfilePage() {
         setError(err instanceof Error ? err.message : "Error loading profile.");
       });
   }, []);
+
+  async function handleCompleteSubscription() {
+    if (!user) return;
+
+    const token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("access_token");
+
+    if (!token) {
+      alert("Please log in before completing your subscription.");
+      navigate("/login");
+      return;
+    }
+
+    if (!user.organizationId || !user.organizationUuid) {
+      navigate("/register-organization");
+      return;
+    }
+
+    setCheckoutLoading(true);
+
+    try {
+      const paymentRes = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/api/v1/payments/org-subscription-checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            orgAccountId: user.organizationId,
+            orgUuid: user.organizationUuid,
+            organizationName: user.organizationName || "Organization Account",
+            contactEmail: user.email,
+            subscriptionRegion: "usa",
+            subscriptionRegionLabel: "United States",
+            subscriptionPriceCents: 29900,
+            subscriptionDisplayPrice: "$299/year",
+          }),
+        }
+      );
+
+      const paymentData = await paymentRes.json().catch(() => ({}));
+
+      if (!paymentRes.ok || !paymentData?.url) {
+        throw new Error(
+          paymentData?.message || "Unable to restart subscription checkout."
+        );
+      }
+
+      window.location.href = paymentData.url;
+    } catch (err: any) {
+      alert(err?.message || "Unable to restart subscription checkout.");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
 
   if (error) {
     return (
@@ -137,18 +196,28 @@ export default function ProfilePage() {
   const orgStatus = (user.organizationStatus || "").toLowerCase();
   const subscriptionStatus = (user.subscriptionStatus || "").toLowerCase();
 
-  const isOrgActive =
-    orgStatus === "active" ||
-    subscriptionStatus === "active";
-
-  const isOrgPending =
-    hasOrgAccount && !isOrgActive;
+  const isOrgActive = orgStatus === "active" || subscriptionStatus === "active";
+  const isOrgPending = hasOrgAccount && !isOrgActive;
 
   const orgDashboardPath = user.organizationUuid ? `/org/${user.organizationUuid}` : "/org";
 
-  const orgButtonLabel = isOrgActive ? "Org Dashboard" : "Complete Subscription";
+  const orgButtonLabel = isOrgActive
+    ? "Org Dashboard"
+    : checkoutLoading
+      ? "Redirecting..."
+      : "Complete Subscription";
+
   const orgAccessLabel = isOrgActive ? "Organization Access" : "Organization Pending";
   const orgAccessStatus = isOrgActive ? "Active" : "Pending Subscription";
+
+  const handleOrgButtonClick = () => {
+    if (isOrgActive) {
+      navigate(orgDashboardPath);
+      return;
+    }
+
+    handleCompleteSubscription();
+  };
 
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 24px 60px" }}>
@@ -186,7 +255,11 @@ export default function ProfilePage() {
               </button>
 
               {hasOrgAccount && (
-                <button onClick={() => navigate(orgDashboardPath)} style={isOrgActive ? goldButtonStyle : pendingButtonStyle}>
+                <button
+                  onClick={handleOrgButtonClick}
+                  disabled={checkoutLoading}
+                  style={isOrgActive ? goldButtonStyle : pendingButtonStyle}
+                >
                   {orgButtonLabel}
                 </button>
               )}
@@ -286,10 +359,15 @@ export default function ProfilePage() {
             <div>
               <div style={itemLabelStyle}>{isOrgActive ? "Dashboard" : "Next Step"}</div>
               <button
-                onClick={() => navigate(orgDashboardPath)}
+                onClick={handleOrgButtonClick}
+                disabled={checkoutLoading}
                 style={isOrgActive ? goldButtonStyle : pendingButtonStyle}
               >
-                {isOrgActive ? "Open Org Dashboard" : "Complete Subscription"}
+                {isOrgActive
+                  ? "Open Org Dashboard"
+                  : checkoutLoading
+                    ? "Redirecting..."
+                    : "Complete Subscription"}
               </button>
             </div>
           </div>
