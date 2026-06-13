@@ -14,6 +14,8 @@ type OrgData = {
   subscription_status?: string | null;
   subscription_started_at?: string | null;
   subscription_expires_at?: string | null;
+  created_by_admin?: boolean;
+  email_verification_method?: string | null;
 };
 
 type FeatureItem = {
@@ -37,15 +39,17 @@ function formatDate(value?: string | null) {
 function formatRegion(region?: string | null) {
   switch ((region || "").toLowerCase()) {
     case "usa":
+    case "united states":
       return "United States";
     case "canada":
       return "Canada";
     case "uk":
+    case "united kingdom":
       return "United Kingdom";
     case "africa":
       return "Africa";
     default:
-      return "—";
+      return region || "—";
   }
 }
 
@@ -104,23 +108,67 @@ export default function ActivatedOrgPage() {
     };
   }, [orgUuid]);
 
+  if (loading) {
+    return <div style={{ color: "#f5f1e8" }}>Loading organization portal...</div>;
+  }
+
+  if (error) {
+    return (
+      <div
+        style={{
+          color: "#f5f1e8",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "20px",
+          padding: "24px",
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Organization Portal</h2>
+        <p style={{ marginBottom: 0 }}>{error}</p>
+      </div>
+    );
+  }
+
   const orgName = organization?.organization_name || "Organization";
-  const orgStatus = organization?.status || "Pending";
+  const orgStatus = organization?.status || "pending";
   const accountType =
     organization?.account_type || "Annual Organization Subscription";
-  const subscriptionStatus = organization?.subscription_status || "pending";
-  const subscriptionRegion = formatRegion(organization?.subscription_region);
+
+  const rawSubscriptionStatus =
+    organization?.subscription_status || organization?.status || "pending";
+
+  const adminActivated =
+    organization?.created_by_admin === true ||
+    organization?.email_verification_method === "admin_verified";
 
   const isSubscriptionActive =
-    subscriptionStatus === "active" &&
-    (!organization?.subscription_expires_at ||
-      new Date(organization.subscription_expires_at).getTime() > Date.now());
+    rawSubscriptionStatus === "active" ||
+    orgStatus === "active" ||
+    adminActivated;
+
+  const subscribedValue = isSubscriptionActive ? "Yes" : "No";
+  const displayStatus = isSubscriptionActive ? "Active" : orgStatus;
+  const displaySubscriptionStatus = isSubscriptionActive
+    ? "active"
+    : rawSubscriptionStatus;
+
+  const subscriptionRegion = formatRegion(organization?.subscription_region);
+
+  const startedValue = organization?.subscription_started_at
+    ? formatDate(organization.subscription_started_at)
+    : adminActivated
+      ? "Admin Activated"
+      : "—";
+
+  const expiresValue = organization?.subscription_expires_at
+    ? formatDate(organization.subscription_expires_at)
+    : "—";
 
   const baseOrgPath = organization?.org_uuid
     ? `/org/${organization.org_uuid}`
     : orgUuid
-    ? `/org/${orgUuid}`
-    : "/org";
+      ? `/org/${orgUuid}`
+      : "/org";
 
   const previewSuffix = isAdminPreview ? "?adminPreview=1" : "";
 
@@ -150,28 +198,12 @@ export default function ActivatedOrgPage() {
       text: "Strengthen your organization identity as Judah Global expands its organization tools.",
       to: `${baseOrgPath}/build-presence${previewSuffix}`,
     },
+    {
+      title: "Media Placement Guide",
+      text: "Review media placement guidance for promotional assets, event visibility, and future campaign preparation.",
+      to: `${baseOrgPath}/media-placement-guide${previewSuffix}`,
+    },
   ];
-
-  if (loading) {
-    return <div style={{ color: "#f5f1e8" }}>Loading organization portal...</div>;
-  }
-
-  if (error) {
-    return (
-      <div
-        style={{
-          color: "#f5f1e8",
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          borderRadius: "20px",
-          padding: "24px",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>Organization Portal</h2>
-        <p style={{ marginBottom: 0 }}>{error}</p>
-      </div>
-    );
-  }
 
   return (
     <div
@@ -224,17 +256,7 @@ export default function ActivatedOrgPage() {
           }}
         >
           <div>
-            <div
-              style={{
-                fontSize: "0.76rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.14em",
-                color: "#c8a96b",
-                marginBottom: "10px",
-              }}
-            >
-              Activated Organization
-            </div>
+            <div style={eyebrowStyle}>Activated Organization</div>
 
             <h2
               style={{
@@ -269,44 +291,25 @@ export default function ActivatedOrgPage() {
                 marginTop: "180px",
               }}
             >
-              <Link
-                to={`${baseOrgPath}/submit-event${previewSuffix}`}
-                style={primaryLinkStyle}
-              >
-                Submit Event
+              <Link to="/" style={primaryLinkStyle}>
+                Home
               </Link>
 
-              <Link
-                to={`${baseOrgPath}/promote-event${previewSuffix}`}
-                style={secondaryLinkStyle}
-              >
-                Promote Event
+              <Link to="/events" style={secondaryLinkStyle}>
+                Events
               </Link>
 
-              <Link
-                to={`${baseOrgPath}/media-placement-guide${previewSuffix}`}
-                style={secondaryLinkStyle}
-              >
-                Media Placement Guide
+              <Link to="/major-events" style={secondaryLinkStyle}>
+                Major Events
               </Link>
             </div>
           </div>
 
           <div style={{ display: "grid", gap: "12px" }}>
-            <InfoCard
-              label="Status"
-              value={isSubscriptionActive ? "Active" : orgStatus}
-              highlight
-            />
-            <InfoCard
-              label="Subscribed"
-              value={formatDate(organization?.subscription_started_at)}
-            />
+            <InfoCard label="Status" value={displayStatus} highlight />
+            <InfoCard label="Subscribed" value={subscribedValue} />
             <InfoCard label="Account Type" value={accountType} />
-            <InfoCard
-              label="Organization ID"
-              value={organization?.org_uuid || "—"}
-            />
+            <InfoCard label="Organization ID" value={organization?.org_uuid || "—"} />
           </div>
         </div>
       </section>
@@ -320,7 +323,6 @@ export default function ActivatedOrgPage() {
       >
         <div style={panelStyle}>
           <div style={eyebrowStyle}>What You Can Do</div>
-
           <h3 style={sectionTitleStyle}>Organization features include:</h3>
 
           <div style={{ display: "grid", gap: "14px" }}>
@@ -370,19 +372,10 @@ export default function ActivatedOrgPage() {
             <div style={{ display: "grid", gap: "14px" }}>
               <DetailRow label="Organization" value={orgName} />
               <DetailRow label="Account Type" value={accountType} />
-              <DetailRow
-                label="Subscription Status"
-                value={subscriptionStatus}
-              />
+              <DetailRow label="Subscription Status" value={displaySubscriptionStatus} />
               <DetailRow label="Region" value={subscriptionRegion} />
-              <DetailRow
-                label="Started"
-                value={formatDate(organization?.subscription_started_at)}
-              />
-              <DetailRow
-                label="Expires"
-                value={formatDate(organization?.subscription_expires_at)}
-              />
+              <DetailRow label="Started" value={startedValue} />
+              <DetailRow label="Expires" value={expiresValue} />
               <DetailRow label="Access" value="Private Organization Portal" />
               <DetailRow label="Visibility" value="Active on Judah Global" />
             </div>
@@ -398,7 +391,6 @@ export default function ActivatedOrgPage() {
             }}
           >
             <div style={eyebrowStyle}>Next Step</div>
-
             <h3 style={sectionTitleStyle}>Start by submitting your first event</h3>
 
             <p
@@ -541,7 +533,17 @@ function DetailRow({ label, value }: { label: string; value: string }) {
         {label}
       </div>
 
-      <div style={{ color: "#fffaf0", fontWeight: 600 }}>{value || "—"}</div>
+      <div
+        style={{
+          color: "#fffaf0",
+          fontWeight: 600,
+          textTransform: label.toLowerCase().includes("status")
+            ? "capitalize"
+            : "none",
+        }}
+      >
+        {value || "—"}
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./register-organization-page.css";
+import { getMyPlatformProfile } from "../services/auth.api";
 
 const ORG_TYPE_OPTIONS = [
   "Organization",
@@ -39,7 +40,24 @@ const REGION_OPTIONS = [
 
 type SubscriptionRegion = (typeof REGION_OPTIONS)[number]["value"];
 
+type PlatformProfileUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  city?: string;
+  stateRegion?: string;
+  phone?: string;
+  country?: string;
+  hasOrgAccount?: boolean;
+  organizationUuid?: string | null;
+};
+
 export default function RegisterOrganizationPage() {
+  const [authLoading, setAuthLoading] = useState(true);
+  const [authError, setAuthError] = useState("");
+  const [platformUser, setPlatformUser] = useState<PlatformProfileUser | null>(null);
+
   const [form, setForm] = useState({
     organization_name: "",
     organization_type: "Organization",
@@ -55,11 +73,48 @@ export default function RegisterOrganizationPage() {
 
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem("auth_token");
+
+    if (!token) {
+      setAuthError("Please log in before registering an organization.");
+      setAuthLoading(false);
+      return;
+    }
+
+    getMyPlatformProfile(token)
+      .then((res) => {
+        const user = res?.user;
+
+        if (!user) {
+          setAuthError(res?.message || "Unable to load your platform profile.");
+          return;
+        }
+
+        setPlatformUser(user);
+
+        setForm((prev) => ({
+          ...prev,
+          contact_name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+          email: user.email || "",
+          phone: user.phone || prev.phone,
+          city: user.city || prev.city,
+          state_region: user.stateRegion || prev.state_region,
+          country: user.country || prev.country,
+        }));
+      })
+      .catch((err) => {
+        setAuthError(err instanceof Error ? err.message : "Unable to load your platform profile.");
+      })
+      .finally(() => {
+        setAuthLoading(false);
+      });
+  }, []);
+
   const selectedRegion = useMemo(() => {
     return (
-      REGION_OPTIONS.find(
-        (region) => region.value === form.subscription_region
-      ) || REGION_OPTIONS[0]
+      REGION_OPTIONS.find((region) => region.value === form.subscription_region) ||
+      REGION_OPTIONS[0]
     );
   }, [form.subscription_region]);
 
@@ -74,6 +129,14 @@ export default function RegisterOrganizationPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const token = localStorage.getItem("auth_token");
+
+    if (!token || !platformUser) {
+      alert("Please log in before registering an organization.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -83,41 +146,44 @@ export default function RegisterOrganizationPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(form),
+          body: JSON.stringify({
+            ...form,
+            email: platformUser.email,
+            contact_email: platformUser.email,
+            platform_user_id: platformUser.id,
+            owner_user_id: platformUser.id,
+          }),
         }
       );
 
       const registerData = await registerRes.json().catch(() => ({}));
 
       if (!registerRes.ok) {
-        throw new Error(
-          registerData?.message || "Failed to register organization"
-        );
+        throw new Error(registerData?.message || "Failed to register organization");
       }
 
       const organization = registerData?.organization;
 
       if (!organization?.id || !organization?.org_uuid) {
-        throw new Error(
-          "Organization was created, but required payment data is missing."
-        );
+        throw new Error("Organization was created, but required payment data is missing.");
       }
-      console.log("SUB REGION:", selectedRegion.value);
-      
+
       const paymentRes = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/v1/payments/org-subscription-checkout`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             orgAccountId: organization.id,
             orgUuid: organization.org_uuid,
             organizationName: organization.organization_name,
-            contactEmail: organization.contact_email || form.email,
-
+            contactEmail: platformUser.email,
+            platformUserId: platformUser.id,
             subscriptionRegion: selectedRegion.value,
             subscriptionRegionLabel: selectedRegion.label,
             subscriptionPriceCents: selectedRegion.priceCents,
@@ -136,9 +202,7 @@ export default function RegisterOrganizationPage() {
       }
 
       if (!paymentData?.url) {
-        throw new Error(
-          "Organization registered, but Stripe checkout URL was not returned."
-        );
+        throw new Error("Organization registered, but Stripe checkout URL was not returned.");
       }
 
       window.location.href = paymentData.url;
@@ -150,6 +214,40 @@ export default function RegisterOrganizationPage() {
       setLoading(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="register-org-page">
+        <div className="register-org-card">
+          <p style={{ textAlign: "center", fontWeight: 700 }}>
+            Loading your profile...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (authError) {
+    return (
+      <div className="register-org-page">
+        <div className="register-org-card">
+          <div
+            style={{
+              background: "#fef2f2",
+              border: "1px solid #fecaca",
+              color: "#991b1b",
+              borderRadius: 16,
+              padding: 18,
+              fontWeight: 700,
+              textAlign: "center",
+            }}
+          >
+            {authError}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="register-org-page">
@@ -270,10 +368,10 @@ export default function RegisterOrganizationPage() {
                 name="email"
                 type="email"
                 className="register-org-input"
-                placeholder="Enter email address"
                 value={form.email}
-                onChange={handleChange}
+                readOnly
                 required
+                title="Organization ownership is linked to your logged-in platform account email."
               />
             </div>
 
@@ -354,11 +452,7 @@ export default function RegisterOrganizationPage() {
           </div>
 
           <div className="register-org-actions">
-            <button
-              type="submit"
-              className="register-org-button"
-              disabled={loading}
-            >
+            <button type="submit" className="register-org-button" disabled={loading}>
               {loading
                 ? "Redirecting to Payment..."
                 : `Register Organization — ${selectedRegion.displayPrice}`}
