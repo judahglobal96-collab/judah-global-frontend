@@ -7,6 +7,8 @@ import {
 } from '../../services/admin/adminOrgAccounts.api';
 import './admin-org-accounts-page.css';
 
+type ActivationType = 'paid' | 'waived';
+
 function formatDate(value?: string | null) {
   if (!value) return '—';
   const date = new Date(value);
@@ -39,6 +41,10 @@ export default function AdminOrgAccountsPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
 
+  const [activationOrg, setActivationOrg] = useState<OrgAccount | null>(null);
+  const [activationType, setActivationType] = useState<ActivationType>('paid');
+  const [waiverReason, setWaiverReason] = useState('Founder onboarding');
+
   async function loadData() {
     try {
       setLoading(true);
@@ -70,9 +76,60 @@ export default function AdminOrgAccountsPage() {
     await loadData();
   }
 
+  function openActivationModal(org: OrgAccount) {
+    setActivationOrg(org);
+    setActivationType('paid');
+    setWaiverReason('Founder onboarding');
+  }
+
+  function closeActivationModal() {
+    if (actionLoadingId) return;
+    setActivationOrg(null);
+    setActivationType('paid');
+    setWaiverReason('Founder onboarding');
+  }
+
+  async function handleActivateOrganization() {
+    if (!activationOrg) return;
+
+    if (activationType === 'waived' && !waiverReason.trim()) {
+      alert('Please enter a waiver reason.');
+      return;
+    }
+
+    try {
+      setActionLoadingId(activationOrg.id);
+
+      const updated = await updateAdminOrgAccountStatus(activationOrg.id, 'active', {
+        activation_type: activationType,
+        billing_type: activationType,
+        waiver_reason: activationType === 'waived' ? waiverReason.trim() : null,
+      });
+    
+      setOrgAccounts((prev) =>
+        prev.map((org) =>
+          org.id === activationOrg.id
+            ? {
+                ...org,
+                status: updated.status,
+                billing_type: activationType,
+              }
+            : org
+        )
+      );
+
+      closeActivationModal();
+    } catch (err: any) {
+      alert(err?.message || 'Failed to activate organization account');
+    } finally {
+      setActionLoadingId(null);
+    }
+  }
+
   async function handleStatusChange(orgId: number, nextStatus: 'active' | 'suspended') {
     try {
       setActionLoadingId(orgId);
+
       const updated = await updateAdminOrgAccountStatus(orgId, nextStatus);
 
       setOrgAccounts((prev) =>
@@ -101,7 +158,6 @@ export default function AdminOrgAccountsPage() {
 
           <div className="admin-org-hero-actions">
             <div className="admin-org-count">{filteredCountLabel}</div>
-
             <button
               type="button"
               className="btn-primary"
@@ -160,7 +216,6 @@ export default function AdminOrgAccountsPage() {
                 No results matched your current search or filter. Try adjusting the status
                 filter or search terms.
               </p>
-
               <button
                 type="button"
                 className="btn-primary"
@@ -221,42 +276,41 @@ export default function AdminOrgAccountsPage() {
                     <td>{formatDate(org.created_at)}</td>
 
                     <td>
-                            
-                            <div className="admin-org-actions vertical">
-                              {org.status !== 'active' && (
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              onClick={() => handleStatusChange(org.id, 'active')}
-                              disabled={actionLoadingId === org.id}
-                            >
-                              {actionLoadingId === org.id ? 'Updating...' : 'Activate'}
+                      <div className="admin-org-actions vertical">
+                        {org.status !== 'active' && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => openActivationModal(org)}
+                            disabled={actionLoadingId === org.id}
+                          >
+                            {actionLoadingId === org.id ? 'Updating...' : 'Activate'}
                           </button>
-                         )}
+                        )}
 
-                          {org.status === 'active' && (
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              onClick={() => handleStatusChange(org.id, 'suspended')}
-                              disabled={actionLoadingId === org.id}
-                           >
-                              {actionLoadingId === org.id ? 'Updating...' : 'Suspend'}
-                            </button>
-                          )}
-
-                            <button
-                              type="button"
-                              className="btn-secondary"
-                              onClick={() => navigate(`/org/${org.org_uuid}`)}
-                            >
-                              View Portal
-                            </button>
-
-                            <button type="button" className="btn-secondary">
-                            Edit
+                        {org.status === 'active' && (
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => handleStatusChange(org.id, 'suspended')}
+                            disabled={actionLoadingId === org.id}
+                          >
+                            {actionLoadingId === org.id ? 'Updating...' : 'Suspend'}
                           </button>
-                        </div>
+                        )}
+
+                        <button
+                          type="button"
+                          className="btn-secondary"
+                          onClick={() => navigate(`/org/${org.org_uuid}`)}
+                        >
+                          View Portal
+                        </button>
+
+                        <button type="button" className="btn-secondary">
+                          Edit
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -265,6 +319,83 @@ export default function AdminOrgAccountsPage() {
           </div>
         )}
       </div>
+
+      {activationOrg && (
+        <div className="admin-org-modal-backdrop" role="presentation">
+          <div className="admin-org-modal" role="dialog" aria-modal="true">
+            <div className="admin-org-kicker">Organization Activation</div>
+            <h2>Activate Organization</h2>
+
+            <p className="admin-org-muted">
+              Choose how to activate <strong>{activationOrg.organization_name}</strong>.
+            </p>
+
+            <div className="admin-org-modal-options">
+              <label className="admin-org-radio-row">
+                <input
+                  type="radio"
+                  name="activationType"
+                  value="paid"
+                  checked={activationType === 'paid'}
+                  onChange={() => setActivationType('paid')}
+                />
+                <span>
+                  <strong>Paid Subscription</strong>
+                  <small>Activate as a standard paid organization.</small>
+                </span>
+              </label>
+
+              <label className="admin-org-radio-row">
+                <input
+                  type="radio"
+                  name="activationType"
+                  value="waived"
+                  checked={activationType === 'waived'}
+                  onChange={() => setActivationType('waived')}
+                />
+                <span>
+                  <strong>Waived Subscription</strong>
+                  <small>Activate without Stripe payment.</small>
+                </span>
+              </label>
+            </div>
+
+            {activationType === 'waived' && (
+              <div className="admin-org-field">
+                <label>Waiver Reason</label>
+                <select
+                  value={waiverReason}
+                  onChange={(e) => setWaiverReason(e.target.value)}
+                  className="admin-org-select"
+                >
+                  <option value="Founder onboarding">Founder onboarding</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            )}
+
+            <div className="admin-org-modal-actions">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={closeActivationModal}
+                disabled={actionLoadingId === activationOrg.id}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleActivateOrganization}
+                disabled={actionLoadingId === activationOrg.id}
+              >
+                {actionLoadingId === activationOrg.id ? 'Activating...' : 'Activate'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

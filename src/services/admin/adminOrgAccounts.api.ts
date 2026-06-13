@@ -105,7 +105,12 @@ export async function createAdminOrgAccount(
 
 export async function updateAdminOrgAccountStatus(
   orgId: number | string,
-  status: string
+  status: string,
+  metadata?: {
+    activation_type?: 'paid' | 'waived';
+    billing_type?: 'paid' | 'waived';
+    waiver_reason?: string | null;
+  }
 ) {
   const res = await fetch(`${ORG_ACCOUNTS_ENDPOINT}/${orgId}/status`, {
     method: 'PATCH',
@@ -114,7 +119,10 @@ export async function updateAdminOrgAccountStatus(
       'Content-Type': 'application/json',
       ...getAuthHeaders(),
     },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({
+      status,
+      ...metadata,
+    }),
   });
 
   const data = await parseJson(res);
