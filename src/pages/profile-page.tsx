@@ -20,6 +20,8 @@ type ProfileUser = {
   organizationId?: string | null;
   organizationUuid?: string | null;
   organizationName?: string | null;
+  organizationStatus?: string | null;
+  subscriptionStatus?: string | null;
 };
 
 const sectionLabelStyle: React.CSSProperties = {
@@ -68,7 +70,10 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
+    const token =
+      localStorage.getItem("auth_token") ||
+      localStorage.getItem("token") ||
+      localStorage.getItem("access_token");
 
     if (!token) {
       setError("Not authenticated.");
@@ -129,7 +134,21 @@ export default function ProfilePage() {
   const hasOrgAccount =
     user.hasOrgAccount === true || Boolean(user.organizationUuid || user.organizationId);
 
+  const orgStatus = (user.organizationStatus || "").toLowerCase();
+  const subscriptionStatus = (user.subscriptionStatus || "").toLowerCase();
+
+  const isOrgActive =
+    orgStatus === "active" ||
+    subscriptionStatus === "active";
+
+  const isOrgPending =
+    hasOrgAccount && !isOrgActive;
+
   const orgDashboardPath = user.organizationUuid ? `/org/${user.organizationUuid}` : "/org";
+
+  const orgButtonLabel = isOrgActive ? "Org Dashboard" : "Complete Subscription";
+  const orgAccessLabel = isOrgActive ? "Organization Access" : "Organization Pending";
+  const orgAccessStatus = isOrgActive ? "Active" : "Pending Subscription";
 
   return (
     <div style={{ maxWidth: 960, margin: "0 auto", padding: "40px 24px 60px" }}>
@@ -162,19 +181,13 @@ export default function ProfilePage() {
             <div style={{ color: "#64748b", fontSize: 16, fontWeight: 600 }}>{user.email}</div>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 12 }}>
-              <button
-                onClick={() => navigate("/profile/edit")}
-                style={darkButtonStyle}
-              >
+              <button onClick={() => navigate("/profile/edit")} style={darkButtonStyle}>
                 Edit Profile
               </button>
 
               {hasOrgAccount && (
-                <button
-                  onClick={() => navigate(orgDashboardPath)}
-                  style={goldButtonStyle}
-                >
-                  Org Dashboard
+                <button onClick={() => navigate(orgDashboardPath)} style={isOrgActive ? goldButtonStyle : pendingButtonStyle}>
+                  {orgButtonLabel}
                 </button>
               )}
             </div>
@@ -202,16 +215,16 @@ export default function ProfilePage() {
                 style={{
                   padding: "10px 14px",
                   borderRadius: 999,
-                  background: "#fffbeb",
-                  border: "1px solid #fde68a",
-                  color: "#92400e",
+                  background: isOrgActive ? "#fffbeb" : "#fff7ed",
+                  border: isOrgActive ? "1px solid #fde68a" : "1px solid #fed7aa",
+                  color: isOrgActive ? "#92400e" : "#9a3412",
                   fontWeight: 800,
                   fontSize: 13,
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
                 }}
               >
-                Organization Access
+                {orgAccessLabel}
               </div>
             )}
           </div>
@@ -240,19 +253,43 @@ export default function ProfilePage() {
       {hasOrgAccount && (
         <div style={{ ...cardStyle, marginBottom: 24 }}>
           <div style={sectionLabelStyle}>Organization Access</div>
+
+          {isOrgPending && (
+            <div
+              style={{
+                background: "#fff7ed",
+                border: "1px solid #fed7aa",
+                color: "#9a3412",
+                borderRadius: 16,
+                padding: "14px 16px",
+                fontWeight: 700,
+                marginBottom: 20,
+                lineHeight: 1.6,
+              }}
+            >
+              Your organization registration has been created, but your subscription is not active yet.
+              Complete your subscription to activate organization access.
+            </div>
+          )}
+
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
             <div>
               <div style={itemLabelStyle}>Organization</div>
               <div style={itemValueStyle}>{user.organizationName || "Organization Account"}</div>
             </div>
+
             <div>
               <div style={itemLabelStyle}>Access Status</div>
-              <div style={itemValueStyle}>Active</div>
+              <div style={itemValueStyle}>{orgAccessStatus}</div>
             </div>
+
             <div>
-              <div style={itemLabelStyle}>Dashboard</div>
-              <button onClick={() => navigate(orgDashboardPath)} style={goldButtonStyle}>
-                Open Org Dashboard
+              <div style={itemLabelStyle}>{isOrgActive ? "Dashboard" : "Next Step"}</div>
+              <button
+                onClick={() => navigate(orgDashboardPath)}
+                style={isOrgActive ? goldButtonStyle : pendingButtonStyle}
+              >
+                {isOrgActive ? "Open Org Dashboard" : "Complete Subscription"}
               </button>
             </div>
           </div>
@@ -280,11 +317,15 @@ export default function ProfilePage() {
           </div>
           <div>
             <div style={itemLabelStyle}>Last Login</div>
-            <div style={itemValueStyle}>{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "—"}</div>
+            <div style={itemValueStyle}>
+              {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "—"}
+            </div>
           </div>
           <div>
             <div style={itemLabelStyle}>Member Since</div>
-            <div style={itemValueStyle}>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}</div>
+            <div style={itemValueStyle}>
+              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "—"}
+            </div>
           </div>
         </div>
       </div>
@@ -309,6 +350,17 @@ const goldButtonStyle: React.CSSProperties = {
   border: "none",
   background: "#C6A75E",
   color: "#111827",
+  fontSize: 13,
+  fontWeight: 800,
+  cursor: "pointer",
+};
+
+const pendingButtonStyle: React.CSSProperties = {
+  padding: "10px 16px",
+  borderRadius: 10,
+  border: "none",
+  background: "#f97316",
+  color: "#ffffff",
   fontSize: 13,
   fontWeight: 800,
   cursor: "pointer",
