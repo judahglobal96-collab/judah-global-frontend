@@ -190,17 +190,46 @@ export default function ProfilePage() {
         ? "System Admin"
         : "User";
 
-  const hasOrgAccount =
-    user.hasOrgAccount === true || Boolean(user.organizationUuid || user.organizationId);
+const profileUser = user as any;
 
-  const orgStatus = (user.organizationStatus || "").toLowerCase();
-  const subscriptionStatus = (user.subscriptionStatus || "").toLowerCase();
+const hasOrgAccount =
+  user.hasOrgAccount === true ||
+  Boolean(
+    user.organizationUuid ||
+      user.organizationId ||
+      profileUser.organization_uuid ||
+      profileUser.organization_id ||
+      profileUser.organization
+  );
 
-  const isOrgActive = orgStatus === "active" || subscriptionStatus === "active";
-  const isOrgPending = hasOrgAccount && !isOrgActive;
+const orgStatus = (
+  user.organizationStatus ||
+  profileUser.organization_status ||
+  profileUser.organization?.status ||
+  ""
+).toLowerCase();
 
-  const orgDashboardPath = user.organizationUuid ? `/org/${user.organizationUuid}` : "/org";
+const subscriptionStatus = (
+  user.subscriptionStatus ||
+  profileUser.subscription_status ||
+  profileUser.organization?.subscription_status ||
+  ""
+).toLowerCase();
 
+const isOrgActive =
+  orgStatus === "active" || subscriptionStatus === "active";
+
+const isOrgPending = hasOrgAccount && !isOrgActive;
+
+const orgDashboardPath =
+  user.organizationUuid
+    ? `/org/${user.organizationUuid}`
+    : profileUser.organization_uuid
+      ? `/org/${profileUser.organization_uuid}`
+      : profileUser.organization?.org_uuid
+        ? `/org/${profileUser.organization.org_uuid}`
+        : "/org";
+                
   const orgButtonLabel = isOrgActive
     ? "Org Dashboard"
     : checkoutLoading
