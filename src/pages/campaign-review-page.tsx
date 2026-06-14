@@ -57,6 +57,7 @@ type CampaignFormState = {
 
 type AvailabilityStatus = "unknown" | "available" | "unavailable";
 type PromoPreviewState = "no_media" | "pending" | "approved" | "rejected";
+type PromoWaiverType = "founder_onboarding" | "strategic_partner";
 
 type BuilderPlacementType =
   | "event_fee"
@@ -448,8 +449,13 @@ export default function CampaignReviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedWaiverType, setSelectedWaiverType] =
+    useState<PromoWaiverType>("founder_onboarding");
+  const [waiverReason, setWaiverReason] = useState("");
+  const [isApplyingWaiver, setIsApplyingWaiver] = useState(false);
 
   const effectiveOrgFlow = useMemo(() => locationOrgFlow, [locationOrgFlow]);
+  const canShowPromoWaiver = effectiveOrgFlow && Boolean(campaign);
 
   const subtotal = useMemo(() => {
     if (!campaign?.items?.length) return 0;
@@ -592,6 +598,76 @@ export default function CampaignReviewPage() {
         error instanceof Error ? error.message : "Unable to start payment right now."
       );
       setIsCreatingCheckout(false);
+    }
+  }
+
+
+  async function handleApplyPromoWaiver() {
+    if (!campaignId) {
+      setErrorMessage("Missing campaign ID.");
+      return;
+    }
+
+    if (!canShowPromoWaiver) {
+      setErrorMessage("Promo waivers are only available for organization campaigns.");
+      return;
+    }
+
+    if (!waiverReason.trim()) {
+      setErrorMessage("Please enter a reason before applying the waiver.");
+      return;
+    }
+
+    setIsApplyingWaiver(true);
+    setErrorMessage("");
+
+    try {
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch(`${API_BASE}/apply-waiver`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          campaignId,
+          waiverType: selectedWaiverType,
+          reason: waiverReason.trim(),
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Unable to apply promo waiver.");
+      }
+
+      setCampaign((current) =>
+        current
+          ? {
+              ...current,
+              ...data,
+              items: Array.isArray(data?.items) ? data.items : current.items,
+              status: data?.status || current.status,
+              waive_event_payment: Boolean(
+                data?.waive_event_payment ?? current.waive_event_payment
+              ),
+              org_subscription_active: Boolean(
+                data?.org_subscription_active ?? current.org_subscription_active
+              ),
+            }
+          : current
+      );
+      setWaiverReason("");
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to apply promo waiver right now."
+      );
+    } finally {
+      setIsApplyingWaiver(false);
     }
   }
 
@@ -999,6 +1075,72 @@ export default function CampaignReviewPage() {
                 <strong>{formatMoney(subtotal)}</strong>
               </div>
 
+          {canShowPromoWaiver ? (
+            <div
+              style={{
+                border: "1px solid #f6d58f",
+                background: "#fffbeb",
+                borderRadius: 14,
+                padding: 16,
+                display: "grid",
+                gap: 12,
+              }}
+            >
+              <div style={{ fontWeight: 800, color: "#101828" }}>
+                Admin Waiver / Comp
+              </div>
+              <div style={{ color: "#475467", fontSize: 13, lineHeight: 1.6 }}>
+                Organization-only promo waiver. Public one-time events are not eligible.
+              </div>
+
+              <select
+                value={selectedWaiverType}
+                onChange={(event) =>
+                  setSelectedWaiverType(event.target.value as PromoWaiverType)
+                }
+                style={{
+                  border: "1px solid #d0d5dd",
+                  borderRadius: 10,
+                  padding: "10px 12px",
+                  fontWeight: 700,
+                  background: "#ffffff",
+                }}
+              >
+                <option value="founder_onboarding">
+                  Founder Onboarding Waiver
+                </option>
+                <option value="strategic_partner">Strategic Partner Comp</option>
+              </select>
+
+              <textarea
+                value={waiverReason}
+                onChange={(event) => setWaiverReason(event.target.value)}
+                placeholder="Reason for waiver"
+                rows={3}
+                style={{
+                  border: "1px solid #d0d5dd",
+                  borderRadius: 10,
+                  padding: "10px 12px",
+                  resize: "vertical",
+                  fontFamily: "inherit",
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={handleApplyPromoWaiver}
+                disabled={isApplyingWaiver || !waiverReason.trim()}
+                style={{
+                  ...secondaryButtonStyle,
+                  width: "100%",
+                  opacity: isApplyingWaiver || !waiverReason.trim() ? 0.6 : 1,
+                }}
+              >
+                {isApplyingWaiver ? "Applying Waiver..." : "Apply Waiver"}
+              </button>
+            </div>
+          ) : null}
+
               <div
                 style={{
                   border: "1px dashed #d0d5dd",
@@ -1081,3 +1223,4 @@ function InfoBlock({
     </div>
   );
 }
+
