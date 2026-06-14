@@ -451,10 +451,12 @@ export default function CampaignReviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingCheckout, setIsCreatingCheckout] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
   const [selectedWaiverType, setSelectedWaiverType] =
     useState<PromoWaiverType>("founder_onboarding");
   const [waiverReason, setWaiverReason] = useState("");
   const [isApplyingWaiver, setIsApplyingWaiver] = useState(false);
+  const [promoWaiverApplied, setPromoWaiverApplied] = useState(false);
 
   const effectiveOrgFlow = useMemo(() => locationOrgFlow, [locationOrgFlow]);
 
@@ -496,6 +498,8 @@ export default function CampaignReviewPage() {
       );
     }, 0);
   }, [campaign, effectiveOrgFlow]);
+
+  const displayedSubtotal = promoWaiverApplied ? 0 : subtotal;
 
   const groupedSummary = useMemo(() => {
     if (!campaign?.items?.length) return [];
@@ -625,7 +629,6 @@ export default function CampaignReviewPage() {
     }
   }
 
-
   async function handleApplyPromoWaiver() {
     if (!campaignId) {
       setErrorMessage("Missing campaign ID.");
@@ -657,7 +660,7 @@ export default function CampaignReviewPage() {
         body: JSON.stringify({
           campaignId,
           waiverType: selectedWaiverType,
-          reason: waiverReason.trim(),
+          waiverReason: waiverReason.trim(),
         }),
       });
 
@@ -667,13 +670,15 @@ export default function CampaignReviewPage() {
         throw new Error(data?.message || "Unable to apply promo waiver.");
       }
 
+      setPromoWaiverApplied(true);
+
       setCampaign((current) =>
         current
           ? {
               ...current,
               ...data,
               items: Array.isArray(data?.items) ? data.items : current.items,
-              status: data?.status || current.status,
+              status: data?.status || data?.payment_status || "paid",
               waive_event_payment: Boolean(
                 data?.waive_event_payment ?? current.waive_event_payment
               ),
@@ -835,19 +840,36 @@ export default function CampaignReviewPage() {
               Back to Campaign Builder
             </button>
 
-            <button
-              type="button"
-              onClick={handlePayCampaign}
-              disabled={isCreatingCheckout || !campaign}
-              style={{
-                ...primaryButtonStyle,
-                width: "auto",
-                minWidth: 220,
-                opacity: isCreatingCheckout ? 0.7 : 1,
-              }}
-            >
-              {isCreatingCheckout ? "Redirecting to Stripe..." : "Continue to Payment"}
-            </button>
+            {promoWaiverApplied ? (
+              <div
+                style={{
+                  border: "1px solid #abefc6",
+                  background: "#ecfdf3",
+                  color: "#027a48",
+                  borderRadius: 14,
+                  padding: "12px 18px",
+                  fontWeight: 800,
+                  minWidth: 220,
+                  textAlign: "center",
+                }}
+              >
+                Waiver Applied · $0.00 Due
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handlePayCampaign}
+                disabled={isCreatingCheckout || !campaign}
+                style={{
+                  ...primaryButtonStyle,
+                  width: "auto",
+                  minWidth: 220,
+                  opacity: isCreatingCheckout ? 0.7 : 1,
+                }}
+              >
+                {isCreatingCheckout ? "Redirecting to Stripe..." : "Continue to Payment"}
+              </button>
+            )}
           </div>
         </section>
 
@@ -1096,7 +1118,7 @@ export default function CampaignReviewPage() {
                 }}
               >
                 <span style={{ fontWeight: 800 }}>Campaign Total</span>
-                <strong>{formatMoney(subtotal)}</strong>
+                <strong>{formatMoney(displayedSubtotal)}</strong>
               </div>
 
           {canShowPromoWaiver ? (
@@ -1180,17 +1202,33 @@ export default function CampaignReviewPage() {
                 counted after successful payment.
               </div>
 
-              <button
-                type="button"
-                onClick={handlePayCampaign}
-                disabled={isCreatingCheckout || !campaign}
-                style={{
-                  ...primaryButtonStyle,
-                  opacity: isCreatingCheckout ? 0.7 : 1,
-                }}
-              >
-                {isCreatingCheckout ? "Redirecting to Stripe..." : "Continue to Payment"}
-              </button>
+              {promoWaiverApplied ? (
+                <div
+                  style={{
+                    border: "1px solid #abefc6",
+                    background: "#ecfdf3",
+                    color: "#027a48",
+                    borderRadius: 14,
+                    padding: 14,
+                    fontWeight: 800,
+                    textAlign: "center",
+                  }}
+                >
+                  Campaign waiver applied. Amount due: $0.00
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handlePayCampaign}
+                  disabled={isCreatingCheckout || !campaign}
+                  style={{
+                    ...primaryButtonStyle,
+                    opacity: isCreatingCheckout ? 0.7 : 1,
+                  }}
+                >
+                  {isCreatingCheckout ? "Redirecting to Stripe..." : "Continue to Payment"}
+                </button>
+              )}
             </div>
           </aside>
         </section>
