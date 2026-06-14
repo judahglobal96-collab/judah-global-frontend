@@ -457,11 +457,29 @@ export default function CampaignReviewPage() {
   const [isApplyingWaiver, setIsApplyingWaiver] = useState(false);
 
   const effectiveOrgFlow = useMemo(() => locationOrgFlow, [locationOrgFlow]);
-  const canShowPromoWaiver =
+
+  const rawUser = localStorage.getItem("auth_user");
+
+  let currentUserRole = "user";
+
+  try {
+    currentUserRole = rawUser ? JSON.parse(rawUser)?.role || "user" : "user";
+  } catch {
+    currentUserRole = "user";
+  }
+
+  const isAdminUser =
+    currentUserRole === "admin" ||
+    currentUserRole === "sysadmin" ||
+    currentUserRole === "execsysadmin";
+
+  const canShowPromoWaiver = isAdminUser &&
+  (
   Boolean(campaign?.org_uuid) ||
   campaign?.source === "org-submit-event-monetization" ||
   Boolean(orgUuid) ||
-  source === "org-submit-event-monetization";
+  source === "org-submit-event-monetization"
+  );
 
   const subtotal = useMemo(() => {
     if (!campaign?.items?.length) return 0;
