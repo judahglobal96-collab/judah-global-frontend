@@ -45,6 +45,8 @@ type CampaignReviewData = {
   items: CampaignReviewItem[];
   waive_event_payment?: boolean;
   org_subscription_active?: boolean;
+  org_uuid?: string | null;
+  source?: string | null;
 };
 
 type CampaignFormState = {
@@ -455,7 +457,11 @@ export default function CampaignReviewPage() {
   const [isApplyingWaiver, setIsApplyingWaiver] = useState(false);
 
   const effectiveOrgFlow = useMemo(() => locationOrgFlow, [locationOrgFlow]);
-  const canShowPromoWaiver = effectiveOrgFlow && Boolean(campaign);
+  const canShowPromoWaiver =
+  Boolean(campaign?.org_uuid) ||
+  campaign?.source === "org-submit-event-monetization" ||
+  Boolean(orgUuid) ||
+  source === "org-submit-event-monetization";
 
   const subtotal = useMemo(() => {
     if (!campaign?.items?.length) return 0;
