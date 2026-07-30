@@ -334,15 +334,12 @@ export default function EventsDiscoveryPage() {
       const country = currentFilters.country.trim();
       const category = currentFilters.category.trim();
 
-      const supportRegion = getSupportRegion();
-      const effectiveCountry = country || supportRegion;
-
       if (search) params.set("q", search);
       if (city) params.set("city", city);
       if (stateRegion) params.set("state_region", stateRegion);
 
-      if (effectiveCountry) {
-        params.set("country", effectiveCountry);
+      if (country) {
+        params.set("country", country);
       }
 
       if (category) params.set("category", category);
